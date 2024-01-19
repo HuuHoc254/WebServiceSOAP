@@ -1,4 +1,4 @@
-package org.example;
+package org.example.config;
 
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
@@ -13,23 +13,23 @@ import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
 
-// WebServiceConfig.java
 @ComponentScan
+@Configuration
 @EnableWs
 public class WebServiceConfig extends WsConfigurerAdapter {
-
     @Bean
     public ServletRegistrationBean<MessageDispatcherServlet> messageDispatcherServlet(ApplicationContext applicationContext) {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(applicationContext);
         servlet.setTransformWsdlLocations(true);
+        servlet.setContextConfigLocation("org.example");
+        // Log đường dẫn đăng ký
         return new ServletRegistrationBean<>(servlet, "/ws/*");
     }
-
-    @Bean
+    @Bean("example")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema yourSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-        wsdl11Definition.setPortTypeName("YourPortType");
+        wsdl11Definition.setPortTypeName("YourWebServiceName");
         wsdl11Definition.setLocationUri("/ws");
         wsdl11Definition.setTargetNamespace("http://yournamespace.com");
         wsdl11Definition.setSchema(yourSchema);
@@ -40,4 +40,5 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     public XsdSchema yourSchema() {
         return new SimpleXsdSchema(new ClassPathResource("your-schema.xsd"));
     }
+
 }
