@@ -1,4 +1,4 @@
-package org.example.dto.response;
+package org.example.dto.request.customer;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -14,9 +14,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "statusResponse", namespace = "http://yournamespace.com")
-@XmlType(propOrder = { "message" })
-public class StatusResponse {
-//    private AccountResponseType accountResponseType;
-    private String message;
+@XmlType(propOrder = { "customerId", "accountId" })
+@XmlRootElement(name = "deleteCustomerRequest")
+public class DeleteCustomerRequest {
+    private Integer customerId;
+    private Integer accountId;
 }

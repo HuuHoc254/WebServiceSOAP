@@ -1,4 +1,4 @@
-package org.example.dto.response;
+package org.example.dto.response.account;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -14,13 +14,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
-public class CustomerResponseType {
-    private Integer customerId;
-    private String customerName;
-    private String phoneNumber;
-    private String address;
+public class AccountResponseType {
     private Integer accountId;
+    private String accountName;
+    private String fullName;
+    private String phoneNumber;
+    private Boolean isOnline;
     private Integer version;
     private Boolean isDeleted;
 
+    // Getter và Setter cho các trường
+
+    // ... (Các getter và setter khác)
 }

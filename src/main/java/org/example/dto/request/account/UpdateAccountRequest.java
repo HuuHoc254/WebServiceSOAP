@@ -1,4 +1,4 @@
-package org.example.dto.request;
+package org.example.dto.request.account;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -23,7 +23,7 @@ import lombok.Setter;
         , "fullName"
         , "phoneNumber"
         ,  "version"  })
-@XmlRootElement(name = "updateAccountRequest", namespace = "http://yournamespace.com")
+@XmlRootElement(name = "updateAccountRequest")
 public class UpdateAccountRequest {
     // getters, setters, constructors
     //    @XmlElement

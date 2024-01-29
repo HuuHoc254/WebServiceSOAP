@@ -1,4 +1,4 @@
-package org.example.dto.response;
+package org.example.dto.response.account;
 
 import jakarta.xml.bind.annotation.*;
 import lombok.AllArgsConstructor;

@@ -3,105 +3,114 @@
            targetNamespace="http://yournamespace.com"
            elementFormDefault="qualified">
 
-    <xs:element name="userRequestXML">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="username" type="xs:string"/>
-                <xs:element name="password" type="xs:string"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:element name="loadAllAccount">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="pageNumber" type="xs:integer"/>-->
+<!--                <xs:element name="pageSize" type="xs:integer"/>-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
-    <xs:element name="loadAllAccount">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="pageNumber" type="xs:integer"/>
-                <xs:element name="pageSize" type="xs:integer"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:element name="createAccountRequest">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="accountName" type="xs:string"/>-->
+<!--                <xs:element name="fullName" type="xs:string"/>-->
+<!--                <xs:element name="password" type="xs:string"/>-->
+<!--                <xs:element name="confirmPassword" type="xs:string" />-->
+<!--                <xs:element name="phoneNumber" type="xs:string"/>-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
-    <xs:element name="createAccountRequest">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="accountName" type="xs:string"/>
-                <xs:element name="fullName" type="xs:string"/>
-                <xs:element name="password" type="xs:string"/>
-                <xs:element name="confirmPassword" type="xs:string" />
-                <xs:element name="phoneNumber" type="xs:string"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:element name="deleteAccountRequest">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="accountId" type="xs:integer"/>-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
-    <xs:element name="deleteAccountRequest">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="accountId" type="xs:integer"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:element name="statusResponse">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="status" type="xs:string" />-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
-    <xs:element name="statusResponse">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="status" type="xs:string" />
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:element name="createAccountResponse">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="status" type="xs:string" />-->
+<!--                <xs:element name="accountResponseType" type="AccountResponseType" />-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
-    <xs:element name="createAccountResponse">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="status" type="xs:string" />
-                <xs:element name="accountResponseType" type="AccountResponseType" />
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:element name="updateAccountRequest">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="accountId" type="xs:integer" />-->
+<!--                <xs:element name="accountName" type="xs:string" />-->
+<!--                <xs:element name="password" type="xs:string" />-->
+<!--                <xs:element name="confirmPassword" type="xs:string" />-->
+<!--                <xs:element name="fullName" type="xs:string" />-->
+<!--                <xs:element name="phoneNumber" type="xs:string" />-->
+<!--                <xs:element name="version" type="xs:integer" />-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
-    <xs:element name="updateAccountRequest">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="accountId" type="xs:integer" />
-                <xs:element name="accountName" type="xs:string" />
-                <xs:element name="password" type="xs:string" />
-                <xs:element name="confirmPassword" type="xs:string" />
-                <xs:element name="fullName" type="xs:string" />
-                <xs:element name="phoneNumber" type="xs:string" />
-                <xs:element name="version" type="xs:integer" />
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:element name="accountResponseList">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="accountResponse" type="AccountResponseType" maxOccurs="unbounded"/>-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
-    <xs:element name="accountResponseList">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="accountResponse" type="AccountResponseType" maxOccurs="unbounded"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:complexType name="AccountResponseType">-->
+<!--        <xs:sequence>-->
+<!--            <xs:element name="accountId" type="xs:integer"/>-->
+<!--            <xs:element name="accountName" type="xs:string"/>-->
+<!--            <xs:element name="fullName" type="xs:string"/>-->
+<!--            <xs:element name="phoneNumber" type="xs:string"/>-->
+<!--            <xs:element name="isOnline" type="xs:boolean"/>-->
+<!--            <xs:element name="version" type="xs:integer"/>-->
+<!--            <xs:element name="isDeleted" type="xs:boolean"/>-->
+<!--        </xs:sequence>-->
+<!--    </xs:complexType>-->
 
-    <xs:complexType name="AccountResponseType">
-        <xs:sequence>
-            <xs:element name="accountId" type="xs:integer"/>
-            <xs:element name="accountName" type="xs:string"/>
-            <xs:element name="fullName" type="xs:string"/>
-            <xs:element name="phoneNumber" type="xs:string"/>
-            <xs:element name="isOnline" type="xs:boolean"/>
-            <xs:element name="version" type="xs:integer"/>
-            <xs:element name="isDeleted" type="xs:boolean"/>
-        </xs:sequence>
-    </xs:complexType>
+<!--&lt;!&ndash;    Customer &ndash;&gt;-->
+<!--    <xs:element name="createCustomerRequest">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="customerName" type="xs:string"/>-->
+<!--                <xs:element name="phoneNumber" type="xs:string"/>-->
+<!--                <xs:element name="accountId" type="xs:integer"/>-->
+<!--                <xs:element name="address" type="xs:string"/>-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
-<!--    Customer -->
-    <xs:element name="createCustomerRequest">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="customerName" type="xs:string"/>
-                <xs:element name="phoneNumber" type="xs:string"/>
-                <xs:element name="accountId" type="xs:integer"/>
-                <xs:element name="address" type="xs:string"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
+<!--    <xs:element name="deleteCustomerRequest">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="customerId" type="xs:integer"/>-->
+<!--                <xs:element name="accountId" type="xs:integer"/>-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
+
+<!--    <xs:element name="loginRequest">-->
+<!--        <xs:complexType>-->
+<!--            <xs:sequence>-->
+<!--                <xs:element name="username" type="xs:string"/>-->
+<!--                <xs:element name="password" type="xs:string"/>-->
+<!--            </xs:sequence>-->
+<!--        </xs:complexType>-->
+<!--    </xs:element>-->
 
 </xs:schema>

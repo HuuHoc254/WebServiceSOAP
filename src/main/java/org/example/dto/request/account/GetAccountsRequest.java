@@ -1,9 +1,9 @@
-package org.example.dto.response;
+package org.example.dto.request.account;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +13,11 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@XmlRootElement(name = "loadAllAccount")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "statusResponse", namespace = "http://yournamespace.com")
-@XmlType(propOrder = { "message" })
-public class StatusResponse {
-//    private AccountResponseType accountResponseType;
-    private String message;
+public class GetAccountsRequest {
+    @XmlElement(name = "pageIndex")
+    private Integer pageIndex;
+    @XmlElement(name = "pageSize")
+    private Integer pageSize;
 }

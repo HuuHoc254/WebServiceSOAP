@@ -1,4 +1,4 @@
-package org.example.dto.request;
+package org.example.dto.request.product;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -13,11 +13,11 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@XmlRootElement(name = "loadAllAccount")
+@XmlRootElement(name = "loadAllProduct")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class GetAccountsRequest {
-    @XmlElement(name = "pageNumber")
-    private Integer pageNumber;
+public class GetProductsRequest {
+    @XmlElement(name = "pageIndex")
+    private Integer pageIndex;
     @XmlElement(name = "pageSize")
     private Integer pageSize;
 }

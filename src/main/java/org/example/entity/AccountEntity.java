@@ -21,6 +21,7 @@ public class AccountEntity {
     private String accountName;
     private String fullName;
     private String password;
+    private String token;
     private String phoneNumber;
     @ManyToOne
     @JoinColumn(name = "role_id")

@@ -1,17 +1,19 @@
 package org.example.service.impl;
 
-import org.example.dto.request.SearchAccountRequest;
-import org.example.dto.request.UpdateAccountRequest;
+import org.example.dto.request.account.CreateAccountRequest;
+import org.example.dto.request.account.SearchAccountRequest;
+import org.example.dto.request.account.UpdateAccountRequest;
 import org.example.entity.AccountEntity;
 import org.example.entity.RoleEntity;
 import org.example.repository.AccountRepository;
 import org.example.service.AccountService;
-import org.example.dto.request.CreateAccountRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,17 +45,14 @@ public class AccountServiceImpl implements AccountService {
         account.setIsDeleted(false);
         return account;
     }
-
     @Override
-    public Page<AccountEntity> findAllAccount(PageRequest pageRequest) {
-        return accountRepository.findAll(pageRequest);
+    public long totalRowFindAll() {
+        return accountRepository.count();
     }
 
     @Override
-    public AccountEntity updateAccount(UpdateAccountRequest updateAccountRequest) {
-        AccountEntity account = accountRepository.findById(updateAccountRequest.getAccountId()).orElse(null);
-
-        return null;
+    public List<AccountEntity> findAll(int rowNumber, int pageSize) {
+        return accountRepository.findAll(rowNumber, pageSize);
     }
 
     @Override
@@ -62,20 +61,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void save(AccountEntity existingAccount) {
-        // Kiểm tra xem version trên existingAccount có trùng với version trong cơ sở dữ liệu không
-        AccountEntity databaseAccount = accountRepository.findById(existingAccount.getAccountId()).orElse(null);
+    @Transactional
+    public void saveAccount(UpdateAccountRequest request) {
+        int rowUpdate = accountRepository
+                .updateAccount(
+                        request.getAccountId()
+                        ,request.getAccountName()
+                        ,request.getPassword()
+                        ,request.getFullName()
+                        ,request.getPhoneNumber()
+                        ,request.getVersion()
+                );
 
-        if (databaseAccount == null) {
-            throw new RuntimeException("Không tìm thấy tài khoản trong cơ sở dữ liệu");
-        }
-
-        if (existingAccount.getVersion() != databaseAccount.getVersion()) {
+        if (rowUpdate==0) {
             throw new OptimisticLockingFailureException
                     ("Phiên bản không trùng khớp. Có thể đã có người cập nhật thông tin tài khoản.");
         }
-        existingAccount.setVersion(existingAccount.getVersion()+1);
-        accountRepository.save(existingAccount);
     }
 
     @Override
@@ -84,12 +85,33 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountEntity> searchAccount(SearchAccountRequest searchAccountRequest) {
+    public int totalRowSearch(String accountName, String phoneNumber, String fullName) {
+        return accountRepository.countSearch(accountName,phoneNumber,fullName);
+    }
+
+    @Override
+    public List<AccountEntity> search(String accountName, String phoneNumber, String fullName, int rowNumber, int pageSize) {
         return accountRepository
-                .findByAccountNameContainingAndPhoneNumberContainingAndFullNameContaining(
-                    searchAccountRequest.getAccountName(),
-                    searchAccountRequest.getPhoneNumber(),
-                    searchAccountRequest.getFullName()
-                );
+                .searchAccount(
+                        accountName
+                        ,phoneNumber
+                        ,fullName
+                        ,rowNumber
+                        ,pageSize);
+    }
+
+    @Override
+    public Optional<AccountEntity> findByAccountName(String accountName) {
+        return accountRepository.findByAccountName(accountName);
+    }
+
+    @Override
+    public void createToken(AccountEntity accountEntity) {
+        accountRepository.save(accountEntity);
+    }
+
+    @Override
+    public Optional<AccountEntity> findByToken(String token) {
+        return accountRepository.findByToken(token);
     }
 }

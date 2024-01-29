@@ -1,9 +1,6 @@
-package org.example.dto.request;
+package org.example.dto.request.account;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,13 +12,19 @@ import lombok.Setter;
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = {
-             "accountName"
+              "accountName"
             , "fullName"
             , "phoneNumber"
+            , "pageIndex"
+            , "pageSize"
             })
-@XmlRootElement(name = "searchAccountRequest", namespace = "http://yournamespace.com")
+@XmlRootElement(name = "searchAccountRequest")
 public class SearchAccountRequest {
     private String accountName;
     private String fullName;
     private String phoneNumber;
+    @XmlElement(name = "pageIndex")
+    private Integer pageIndex;
+    @XmlElement(name = "pageSize")
+    private Integer pageSize;
 }

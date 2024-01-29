@@ -1,7 +1,8 @@
-package org.example.dto.response;
+package org.example.dto.response.customer;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,17 +14,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "customerResponse", namespace = "http://yournamespace.com")
 @XmlType
-public class AccountResponseType {
-    private Integer accountId;
-    private String accountName;
-    private String fullName;
+public class CustomerResponseType {
+    private Integer customerId;
+    private String customerName;
     private String phoneNumber;
-    private Boolean isOnline;
+    private String address;
+    private Integer accountId;
     private Integer version;
     private Boolean isDeleted;
 
-    // Getter và Setter cho các trường
-
-    // ... (Các getter và setter khác)
 }

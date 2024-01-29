@@ -1,4 +1,4 @@
-package org.example.dto.request;
+package org.example.dto.request.account;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -16,14 +16,19 @@ import lombok.Setter;
 @XmlAccessorType(XmlAccessType.FIELD)
 
 @XmlType(propOrder = {
-        "customerName"
-        , "phoneNumber"
-        , "accountId"
-        , "address"  })
-@XmlRootElement(name = "createCustomerRequest", namespace = "http://yournamespace.com")
-public class CreateCustomerRequest {
-    private String customerName;
+          "accountName"
+        , "fullName"
+        , "password"
+        , "confirmPassword"
+        , "phoneNumber"  })
+@XmlRootElement(name = "createAccountRequest")
+public class CreateAccountRequest {
+    // getters, setters, constructors
+    //    @XmlElement
+    private String accountName;
+    private String fullName;
+    private String password;
+    private String confirmPassword;
     private String phoneNumber;
-    private Integer accountId;
-    private String address;
+
 }
