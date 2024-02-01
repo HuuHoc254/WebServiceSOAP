@@ -1,14 +1,16 @@
 package org.example.endpoint;
 
-import org.example.dto.request.customer.DeleteCustomerRequest;
-import org.example.dto.request.customer.SearchCustomerRequest;
-import org.example.dto.request.customer.GetCustomersRequest;
-import org.example.dto.request.customer.CreateCustomerRequest;
+import org.example.dto.request.customer.*;
+import org.example.dto.request.product.UpdateProductRequest;
 import org.example.dto.response.*;
 import org.example.dto.response.customer.CustomerResponseList;
 import org.example.dto.response.customer.CustomerResponseType;
+import org.example.dto.response.customer.UpdateCustomerResponse;
+import org.example.dto.response.product.ProductResponseType;
+import org.example.dto.response.product.UpdateProductResponse;
 import org.example.entity.AccountEntity;
 import org.example.entity.CustomerEntity;
+import org.example.entity.ProductEntity;
 import org.example.service.AccountService;
 import org.example.service.CustomerService;
 import org.example.validate.customer.CustomerValidate;
@@ -23,6 +25,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Endpoint
 public class CustomerEndpoint {
@@ -195,4 +198,40 @@ public class CustomerEndpoint {
         return response;
     }
 
+    @PayloadRoot(namespace = "http://yournamespace.com", localPart = "updateCustomerRequest")
+    @ResponsePayload
+    @Secured({"ROLE_ADMIN" , "ROLE_STAFF"})
+    public UpdateCustomerResponse updateCustomer(@RequestPayload UpdateCustomerRequest request) {
+        UpdateCustomerResponse response = new UpdateCustomerResponse();
+
+        try {
+            // Thực hiện validation
+            Errors errors = validate.validateUpdateCustomer(request);
+
+            // Nếu có lỗi validation
+            if (errors.hasErrors()) {
+                List<ErrorTypeResponse> errorListResponse =
+                        errors.getFieldErrors().stream().map(er ->{
+                            ErrorTypeResponse errorTypeResponse = new ErrorTypeResponse();
+                            errorTypeResponse.setErrorMessage(er.getDefaultMessage());
+                            return errorTypeResponse;
+                        }).collect(Collectors.toList());
+                response.setErrorTypes(errorListResponse);
+            }
+
+            CustomerEntity customer = customerService.updateCustomer(request);
+
+            CustomerResponseType customerResponseType = new CustomerResponseType();
+            BeanUtils.copyProperties(customer,customerResponseType);
+
+            response.setCustomerResponseType(customerResponseType);
+
+            response.setStatus("Cập nhật sản phẩm thành công!");
+
+        } catch (Exception e) {
+            // Xử lý lỗi và đặt giá trị lỗi vào phản hồi
+            response.setStatus(e.getMessage());
+        }
+        return response;
+    }
 }

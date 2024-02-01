@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -32,11 +33,11 @@ public class OrderEntity {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private AccountEntity account;
-    private LocalDate orderDate;
-    private LocalDate allocationDate;
+    private LocalDateTime orderDate;
+    private LocalDateTime allocationDate;
     @ManyToOne
     @JoinColumn(name = "order_status_id")
     private OrderStatusEntity orderStatus;
     private Integer version;
-    private Boolean idDeleted;
+    private Boolean isDeleted;
 }

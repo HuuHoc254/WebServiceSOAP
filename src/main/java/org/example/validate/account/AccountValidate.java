@@ -12,7 +12,7 @@ public class AccountValidate {
     @Autowired
     private AccountRepository accountRepository;
     public void validatePassword(String password, Errors errors){
-        if(password.equals("")){
+        if("".equals(password)){
             errors.rejectValue("password", "" , "Password không được để trống!");
         } else if (password.length() < 8) {
             errors.rejectValue("password", "password.short", "Mật khẩu phải từ 8 kí tự trở lên.");
@@ -29,7 +29,7 @@ public class AccountValidate {
     }
 
     public void validatePhoneNumber(String phoneNumber, Errors errors){
-        if(phoneNumber.equals("")){
+        if("".equals(phoneNumber)){
             errors.rejectValue("phoneNumber", "" , "PhoneNumber không được để trống!");
         } else if (!phoneNumber.matches("^\\d{10,}$")) {
                 errors.rejectValue("phoneNumber", "phoneNumber.invalid", "Định dạng số điện thoại không hợp lệ.");
@@ -39,7 +39,7 @@ public class AccountValidate {
     }
 
     public void validateFullName(String fullName, Errors errors){
-        if(fullName.equals("")){
+        if("".equals(fullName)){
             errors.rejectValue("fullName", "" , "FullName không được để trống!");
         }
     }

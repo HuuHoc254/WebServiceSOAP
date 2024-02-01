@@ -31,7 +31,7 @@ public interface AccountService {
                               , int rowNumber
                               , int pageSize);
 
-    Optional<AccountEntity> findByAccountName(String accountName);
+    AccountEntity findByAccountName(String accountName);
 
     void createToken(AccountEntity accountEntity);
 

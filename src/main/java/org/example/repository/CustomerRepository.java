@@ -1,6 +1,5 @@
 package org.example.repository;
 
-import org.example.entity.AccountEntity;
 import org.example.entity.CustomerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<CustomerEntity,Integer> {
@@ -55,6 +55,34 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity,Integer
             + " AND (customer.administrator_id = :accountId OR role.role_name = 'ROLE_ADMIN')",
             nativeQuery = true)
     int deleteCustomer(@Param("customerId") Integer customerId,
-                             @Param("accountId") Integer accountId);
+                       @Param("accountId") Integer accountId);
 
+    @Modifying
+    @Query(value =
+              "  UPDATE customer"
+            + "  INNER JOIN account ON customer.administrator_id = account.account_id"
+            + "  INNER JOIN role ON account.role_id = role.role_id"
+            + "  SET customer.customer_name = :customerName"
+            + ", customer.phone_number = :phoneNumber"
+            + ", customer.address = :address"
+            + ", customer.version = customer.version + 1"
+            + "  WHERE customer.customer_id = :customerId AND customer.version = :version"
+            + " AND (customer.administrator_id = :accountId OR role.role_name = 'ROLE_ADMIN')",
+            nativeQuery = true)
+    int updateCustomer(
+            @Param("customerId") Integer customerId,
+            @Param("accountId") Integer accountId,
+            @Param("customerName") String customerName,
+            @Param("phoneNumber") String phoneNumber,
+            @Param("address") String address,
+            @Param("version") Integer version
+    );
+
+    Optional<CustomerEntity> findByPhoneNumber(String phoneNumber);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByPhoneNumberAndCustomerIdNot(String phoneNumber, Integer customerId);
+
+    CustomerEntity findByCustomerName(String customerName);
 }

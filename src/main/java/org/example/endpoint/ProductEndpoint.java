@@ -1,15 +1,16 @@
 package org.example.endpoint;
 
-import org.example.dto.request.product.CreateProductRequest;
-import org.example.dto.request.product.GetProductsRequest;
-import org.example.dto.request.product.SearchProductRequest;
+import jakarta.xml.bind.ValidationException;
+import org.example.dto.request.product.*;
 import org.example.dto.response.ErrorTypeResponse;
+import org.example.dto.response.StatusResponse;
 import org.example.dto.response.product.CreateProductResponse;
 import org.example.dto.response.product.ProductResponseList;
 import org.example.dto.response.product.ProductResponseType;
+import org.example.dto.response.product.UpdateProductResponse;
 import org.example.entity.ProductEntity;
 import org.example.service.ProductService;
-import org.example.validate.product.ValidateProduct;
+import org.example.validate.product.ProductValidate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -29,11 +30,11 @@ public class ProductEndpoint {
     @Autowired
     private ProductService productService;
     @Autowired
-    private ValidateProduct validate;
+    private ProductValidate validate;
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "loadAllProduct")
     @ResponsePayload
-    @Secured("ROLE_ADMIN")
+    @Secured({"ROLE_ADMIN","ROLE_STAFF"})
     public ProductResponseList loadAllProduct(@RequestPayload GetProductsRequest request) {
             ProductResponseList responseList = new ProductResponseList();
         int pageSize = Optional.ofNullable(request.getPageSize()).orElse(5);
@@ -66,7 +67,7 @@ public class ProductEndpoint {
                     BeanUtils.copyProperties(productEntity,response);
                     return response;
                 }).toList();
-        responseList.setCustomerResponses(productResponses);
+        responseList.setProductResponses(productResponses);
         return responseList;
     }
 
@@ -117,7 +118,7 @@ public class ProductEndpoint {
                     return response;
                 }).toList();
 
-        responseList.setCustomerResponses(productResponses);
+        responseList.setProductResponses(productResponses);
         return responseList;
     }
 
@@ -141,7 +142,7 @@ public class ProductEndpoint {
                         }).collect(Collectors.toList());
 
                 response.setErrorTypes(errorListResponse);
-                throw new Exception(errors.getFieldError().getDefaultMessage());
+                throw new ValidationException("Lỗi Validate!");
 
             }
 
@@ -155,10 +156,72 @@ public class ProductEndpoint {
             response.setStatus("Account create successfully");
         } catch (Exception e) {
             // Xử lý lỗi và đặt giá trị lỗi vào phản hồi
-//            response.setStatus("Error: " + e.getMessage());
+            response.setStatus("Error: " + e.getMessage());
         }
 
         return response;
     }
 
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "deleteProductRequest")
+    @ResponsePayload
+    @Secured({"ROLE_ADMIN"})
+    public StatusResponse deleteCustomer(@RequestPayload DeleteProductRequest deleteProduct) {
+        StatusResponse response = new StatusResponse();
+        try {
+            boolean check =
+                    productService.deleteProduct(
+                            deleteProduct.getProductId());
+            if(check){
+//          Cập nhật trạng thái
+                response.setMessage("Product đã xóa thành công!");
+            }else {
+                response.setMessage("ProductId không tồn tại!");
+            }
+        } catch (Exception e) {
+            // Xử lý lỗi và đặt giá trị lỗi vào phản hồi
+            response.setMessage("Error: " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(namespace = "http://yournamespace.com", localPart = "updateProductRequest")
+    @ResponsePayload
+    @Secured("ROLE_ADMIN")
+    public UpdateProductResponse updateProduct(@RequestPayload UpdateProductRequest request) {
+        UpdateProductResponse response = new UpdateProductResponse();
+
+        try {
+            // Thực hiện validation
+            Errors errors = validate.validateUpdateProduct(request);
+
+            // Nếu có lỗi validation
+            if (errors.hasErrors()) {
+                List<ErrorTypeResponse> errorListResponse =
+                        errors.getFieldErrors().stream().map(er ->{
+                            ErrorTypeResponse errorTypeResponse = new ErrorTypeResponse();
+                            errorTypeResponse.setErrorMessage(er.getDefaultMessage());
+                            return errorTypeResponse;
+                        }).collect(Collectors.toList());
+
+                response.setErrorTypes(errorListResponse);
+                throw new ValidationException("Lỗi Validate!");
+
+            }
+
+            ProductEntity product = productService.updateProduct(request);
+
+            ProductResponseType productResponseType = new ProductResponseType();
+            BeanUtils.copyProperties(product,productResponseType);
+
+            response.setProductResponseType(productResponseType);
+
+            response.setStatus("Cập nhật sản phẩm thành công!");
+
+        } catch (Exception e) {
+            // Xử lý lỗi và đặt giá trị lỗi vào phản hồi
+            response.setStatus(e.getMessage());
+        }
+        return response;
+    }
 }

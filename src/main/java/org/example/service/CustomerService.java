@@ -1,9 +1,11 @@
 package org.example.service;
 
+import org.example.dto.request.customer.UpdateCustomerRequest;
 import org.example.entity.AccountEntity;
 import org.example.entity.CustomerEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomerService {
     CustomerEntity saveCustomer(CustomerEntity customer);
@@ -20,4 +22,14 @@ public interface CustomerService {
                               , int pageSize);
 
     boolean deleteCustomer(Integer customerId, AccountEntity account);
+
+    CustomerEntity updateCustomer(UpdateCustomerRequest request);
+
+    CustomerEntity findByPhoneNumber(String phoneNumber);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByPhoneNumberAndCustomerIdNot(String phoneNumber, Integer customerId);
+
+    CustomerEntity findByCustomerName(String customerName);
 }

@@ -40,7 +40,6 @@ public class AccountEndpoint {
     @ResponsePayload
     @Secured("ROLE_ADMIN")
     public AccountResponseList loadAllAccount(@RequestPayload GetAccountsRequest request) {
-
         AccountResponseList responseList = new AccountResponseList();
         int pageSize = Optional.ofNullable(request.getPageSize()).orElse(5);
         int pageIndex = Optional.ofNullable(request.getPageIndex()).orElse(0);
@@ -149,7 +148,6 @@ public class AccountEndpoint {
         response.setIsDeleted(account.getIsDeleted());
         response.setVersion(account.getVersion());
     }
-
 
     @PayloadRoot(namespace = "http://yournamespace.com", localPart = "updateAccountRequest")
     @ResponsePayload
