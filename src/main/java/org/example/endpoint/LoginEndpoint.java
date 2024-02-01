@@ -49,10 +49,8 @@ public class LoginEndpoint {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            Optional<AccountEntity> account = accountService.findByAccountName(accountName);
             String token = passwordEncoder.encode(accountName + password + Math.random());
-
-            AccountEntity accountEntity = account.get();
+            AccountEntity accountEntity = accountService.findByAccountName(accountName);
             accountEntity.setToken(token);
             accountEntity.setIsOnline(true);
             accountService.createToken(accountEntity);

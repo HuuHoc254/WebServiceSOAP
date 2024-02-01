@@ -101,8 +101,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<AccountEntity> findByAccountName(String accountName) {
-        return accountRepository.findByAccountName(accountName);
+    public AccountEntity findByAccountName(String accountName) {
+        return accountRepository.findByAccountName(accountName).orElse(null);
     }
 
     @Override

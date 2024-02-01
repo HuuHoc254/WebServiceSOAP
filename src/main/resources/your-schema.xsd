@@ -3,26 +3,26 @@
            targetNamespace="http://yournamespace.com"
            elementFormDefault="qualified">
 
-<!--    <xs:element name="loadAllAccount">-->
-<!--        <xs:complexType>-->
-<!--            <xs:sequence>-->
-<!--                <xs:element name="pageNumber" type="xs:integer"/>-->
-<!--                <xs:element name="pageSize" type="xs:integer"/>-->
-<!--            </xs:sequence>-->
-<!--        </xs:complexType>-->
-<!--    </xs:element>-->
+    <xs:element name="loadAllAccount">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="pageNumber" type="xs:integer"/>
+                <xs:element name="pageSize" type="xs:integer"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
-<!--    <xs:element name="createAccountRequest">-->
-<!--        <xs:complexType>-->
-<!--            <xs:sequence>-->
-<!--                <xs:element name="accountName" type="xs:string"/>-->
-<!--                <xs:element name="fullName" type="xs:string"/>-->
-<!--                <xs:element name="password" type="xs:string"/>-->
-<!--                <xs:element name="confirmPassword" type="xs:string" />-->
-<!--                <xs:element name="phoneNumber" type="xs:string"/>-->
-<!--            </xs:sequence>-->
-<!--        </xs:complexType>-->
-<!--    </xs:element>-->
+    <xs:element name="createAccountRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="accountName" type="xs:string"/>
+                <xs:element name="fullName" type="xs:string"/>
+                <xs:element name="password" type="xs:string"/>
+                <xs:element name="confirmPassword" type="xs:string" />
+                <xs:element name="phoneNumber" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 
 <!--    <xs:element name="deleteAccountRequest">-->
 <!--        <xs:complexType>-->

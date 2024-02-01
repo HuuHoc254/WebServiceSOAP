@@ -17,5 +17,5 @@ import java.util.List;
 @XmlType
 public class ProductResponseList {
     @XmlElement(name = "productResponse")
-    private List<ProductResponseType> customerResponses;
+    private List<ProductResponseType> productResponses;
 }
