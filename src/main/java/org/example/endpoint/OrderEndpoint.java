@@ -1,15 +1,18 @@
 package org.example.endpoint;
 
-import org.example.dto.request.order.CreateOrderRequest;
-import org.example.dto.request.order.GetOrdersRequest;
-import org.example.dto.request.order.SearchOrderRequest;
+import jakarta.persistence.OptimisticLockException;
+import org.example.dto.request.order.*;
 import org.example.dto.response.ErrorTypeResponse;
+import org.example.dto.response.StatusResponse;
 import org.example.dto.response.order.CreateOrderResponse;
 import org.example.dto.response.order.OrderResponseList;
 import org.example.dto.response.order.OrderResponseType;
+import org.example.dto.response.order.UpdateOrderResponse;
 import org.example.entity.AccountEntity;
 import org.example.entity.OrderEntity;
 import org.example.model.CreateOrderValidateDTO;
+import org.example.model.UpdateOrderDTO;
+import org.example.model.UpdateOrderValidateDTO;
 import org.example.security.UserDetailImpl;
 import org.example.service.AccountService;
 import org.example.service.OrderService;
@@ -31,7 +34,8 @@ import java.util.stream.Collectors;
 @Endpoint
 public class OrderEndpoint {
     private static final String NAMESPACE_URI = "http://yournamespace.com";
-
+    private static final String ADMIN = "ROLE_ADMIN";
+    private static final String STAFF = "ROLE_STAFF";
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -42,7 +46,7 @@ public class OrderEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "createOrderRequest")
     @ResponsePayload
-    @Secured({"ROLE_ADMIN","ROLE_STAFF"})
+    @Secured({ADMIN,STAFF})
     public CreateOrderResponse createOrder(@RequestPayload CreateOrderRequest request) {
         CreateOrderResponse response = new CreateOrderResponse();
 
@@ -64,7 +68,9 @@ public class OrderEndpoint {
 
             OrderEntity order = orderService.createOrder(dto.getCustomer(),dto.getProduct(),request.getQuantity());
 
-            OrderResponseType orderResponseType = convertOrderToResponse(order);
+            UserDetailImpl userDetail = (UserDetailImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            AccountEntity account = accountService.findById(userDetail.getAccountId()).orElse(null);
+            OrderResponseType orderResponseType = convertOrderToResponse(order,account.getRole().getRoleName());
 
             response.setOrderResponseType(orderResponseType);
 
@@ -79,7 +85,7 @@ public class OrderEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "loadAllOrder")
     @ResponsePayload
-    @Secured({"ROLE_ADMIN","ROLE_STAFF"})
+    @Secured({ADMIN, STAFF})
     public OrderResponseList loadAllOrder(@RequestPayload GetOrdersRequest request) {
         OrderResponseList responseList = new OrderResponseList();
         int pageSize = Optional.ofNullable(request.getPageSize()).orElse(5);
@@ -109,14 +115,16 @@ public class OrderEndpoint {
 //      Chuyển đổi về XML
         List<OrderResponseType> orderResponses = orders
                 .stream()
-                .map(this::convertOrderToResponse).toList();
+                .map(order -> {
+                    return convertOrderToResponse(order,account.getRole().getRoleName());
+                }).toList();
         responseList.setOrderResponses(orderResponses);
         return responseList;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "searchOrderRequest")
     @ResponsePayload
-    @Secured({"ROLE_ADMIN" , "ROLE_STAFF"})
+    @Secured({ADMIN, STAFF})
     public OrderResponseList searchOrder(@RequestPayload SearchOrderRequest request) {
         OrderResponseList responseList = new OrderResponseList();
 
@@ -171,7 +179,7 @@ public class OrderEndpoint {
 //Chuyển đổi về XML
             List<OrderResponseType> orderResponse = orders
                     .stream()
-                    .map(this::convertOrderToResponse).toList();
+                    .map(order-> convertOrderToResponse(order,account.getRole().getRoleName())).toList();
 
             responseList.setOrderResponses(orderResponse);
         } catch (Exception e){
@@ -180,7 +188,60 @@ public class OrderEndpoint {
 
         return responseList;
     }
-    private OrderResponseType convertOrderToResponse(OrderEntity order) {
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "updateOrderRequest")
+    @ResponsePayload
+    @Secured({ADMIN, STAFF})
+    public UpdateOrderResponse updateOrder(@RequestPayload UpdateOrderRequest request) {
+        UpdateOrderResponse response = new UpdateOrderResponse();
+
+        try {
+            /// Thực hiện validation
+            UpdateOrderValidateDTO dto = validate.validateUpdateOrder(request);
+
+//             Nếu có lỗi validation
+            if (dto.getErrors().hasErrors()) {
+                List<ErrorTypeResponse> errorListResponse =
+                        dto.getErrors().getFieldErrors().stream().map(er ->{
+                            ErrorTypeResponse errorTypeResponse = new ErrorTypeResponse();
+                            errorTypeResponse.setErrorMessage(er.getDefaultMessage());
+                            return errorTypeResponse;
+                        }).collect(Collectors.toList());
+                response.setErrorTypes(errorListResponse);
+                throw new Exception("Có lỗi validate!");
+            }
+
+            UpdateOrderDTO updateOrderDTO = new UpdateOrderDTO(
+                      request.getOrderId()
+                    , dto.getProduct().getProductId()
+                    , dto.getCustomer().getCustomerId()
+                    , request.getQuantity()
+                    , request.getVersion());
+            int row = orderService.updateOrder(updateOrderDTO);
+
+            OrderEntity order = null;
+            if(row == 0){
+                throw new OptimisticLockException("Phiên bản không trùng khớp!");
+            }else {
+                order = orderService.findById(request.getOrderId());
+            }
+
+            UserDetailImpl userDetail = (UserDetailImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            AccountEntity account = accountService.findById(userDetail.getAccountId()).orElse(null);
+
+            OrderResponseType orderResponseType = convertOrderToResponse(order,account.getRole().getRoleName());
+
+            response.setOrderResponseType(orderResponseType);
+
+            response.setStatus("Cập nhật sản phẩm thành công!");
+
+        } catch (Exception e) {
+            // Xử lý lỗi và đặt giá trị lỗi vào phản hồi
+            response.setStatus(e.getMessage());
+        }
+        return response;
+    }
+    private OrderResponseType convertOrderToResponse(OrderEntity order, String role) {
         OrderResponseType response = new OrderResponseType();
         response.setOrderId(order.getOrderId());
         response.setOrderDateTime(order.getOrderDate().format(formatter));
@@ -195,10 +256,36 @@ public class OrderEndpoint {
         if(order.getAllocationDate()!=null){
             response.setAllocationDateTime(order.getAllocationDate().format(formatter));
         }
-        response.setAccountName(order.getAccount().getAccountName());
-        response.setStaffFullName(order.getAccount().getFullName());
+        if(role.equals(ADMIN)){
+            response.setAccountName(order.getAccount().getAccountName());
+            response.setStaffFullName(order.getAccount().getFullName());
+        }
+
         response.setVersion(order.getVersion());
         response.setIsDeleted(order.getIsDeleted());
+        return response;
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "deleteOrderRequest")
+    @ResponsePayload
+    @Secured({ADMIN, STAFF})
+    public StatusResponse deleteOrder(@RequestPayload DeleteOrderRequest request) {
+        StatusResponse response = new StatusResponse();
+        try {
+            int result =
+                    orderService.deleteOrder(
+                            request.getOrderId());
+            if(result>0){
+//          Cập nhật trạng thái
+                response.setMessage("Order đã xóa thành công!");
+            }else {
+                response.setMessage("OrderId không tồn tại!");
+            }
+        } catch (Exception e) {
+            // Xử lý lỗi và đặt giá trị lỗi vào phản hồi
+            response.setMessage("Error: " + e.getMessage());
+        }
+
         return response;
     }
 }

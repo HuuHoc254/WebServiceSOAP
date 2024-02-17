@@ -164,6 +164,7 @@ public class AccountEndpoint {
             if (errors.hasErrors()) {
                 throw new Exception(errors.getFieldError().getDefaultMessage());
             }
+            accountUpdateRequest.setPassword(passwordEncoder.encode(accountUpdateRequest.getPassword()));
             accountService.saveAccount(accountUpdateRequest);
 
             response.setMessage("Account updated successfully");

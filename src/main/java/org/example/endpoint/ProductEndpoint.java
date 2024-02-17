@@ -165,7 +165,7 @@ public class ProductEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "deleteProductRequest")
     @ResponsePayload
     @Secured({"ROLE_ADMIN"})
-    public StatusResponse deleteCustomer(@RequestPayload DeleteProductRequest deleteProduct) {
+    public StatusResponse deleteProduct(@RequestPayload DeleteProductRequest deleteProduct) {
         StatusResponse response = new StatusResponse();
         try {
             boolean check =

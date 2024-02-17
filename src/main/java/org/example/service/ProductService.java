@@ -5,7 +5,6 @@ import org.example.dto.request.product.UpdateProductRequest;
 import org.example.entity.ProductEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ProductService {
     long totalRowFindAll();

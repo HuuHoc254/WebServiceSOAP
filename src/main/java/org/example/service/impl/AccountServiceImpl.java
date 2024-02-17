@@ -1,17 +1,13 @@
 package org.example.service.impl;
 
 import org.example.dto.request.account.CreateAccountRequest;
-import org.example.dto.request.account.SearchAccountRequest;
 import org.example.dto.request.account.UpdateAccountRequest;
 import org.example.entity.AccountEntity;
 import org.example.entity.RoleEntity;
 import org.example.repository.AccountRepository;
 import org.example.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class AccountServiceImpl implements AccountService {
     @Autowired
     AccountRepository accountRepository;

@@ -1,10 +1,8 @@
 package org.example.service.impl;
 
 import org.example.dto.request.customer.UpdateCustomerRequest;
-import org.example.dto.request.product.UpdateProductRequest;
 import org.example.entity.AccountEntity;
 import org.example.entity.CustomerEntity;
-import org.example.entity.ProductEntity;
 import org.example.repository.CustomerRepository;
 import org.example.service.AccountService;
 import org.example.service.CustomerService;
@@ -15,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CustomerRepository customerRepository;

@@ -1,16 +1,13 @@
 package org.example.endpoint;
 
 import org.example.dto.request.customer.*;
-import org.example.dto.request.product.UpdateProductRequest;
-import org.example.dto.response.*;
+import org.example.dto.response.ErrorTypeResponse;
+import org.example.dto.response.StatusResponse;
 import org.example.dto.response.customer.CustomerResponseList;
 import org.example.dto.response.customer.CustomerResponseType;
 import org.example.dto.response.customer.UpdateCustomerResponse;
-import org.example.dto.response.product.ProductResponseType;
-import org.example.dto.response.product.UpdateProductResponse;
 import org.example.entity.AccountEntity;
 import org.example.entity.CustomerEntity;
-import org.example.entity.ProductEntity;
 import org.example.service.AccountService;
 import org.example.service.CustomerService;
 import org.example.validate.customer.CustomerValidate;

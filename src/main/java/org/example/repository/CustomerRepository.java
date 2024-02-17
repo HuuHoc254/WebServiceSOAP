@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +42,6 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity,Integer
     );
 
     @Modifying
-    @Transactional
 //    @Query("DELETE FROM CustomerEntity c " +
 //            " WHERE c.customerId = :customerId " +
 //            " AND (c.account = :account OR c.account.role.roleName = 'ROLE_ADMIN')")

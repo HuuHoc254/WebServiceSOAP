@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +45,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
     boolean existsByProductName(String productName);
 
     @Modifying
-    @Transactional
     @Query(value = "UPDATE product "
             + " SET product.is_deleted = true"
             + " WHERE product.product_id = :productId",

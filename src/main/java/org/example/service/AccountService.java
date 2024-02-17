@@ -1,11 +1,8 @@
 package org.example.service;
 
 import org.example.dto.request.account.CreateAccountRequest;
-import org.example.dto.request.account.SearchAccountRequest;
 import org.example.dto.request.account.UpdateAccountRequest;
 import org.example.entity.AccountEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;

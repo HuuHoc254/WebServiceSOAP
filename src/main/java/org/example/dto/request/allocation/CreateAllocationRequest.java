@@ -1,4 +1,4 @@
-package org.example.dto.request.account;
+package org.example.dto.request.allocation;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -14,9 +14,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "accountName" , "password" })
-@XmlRootElement(name = "loginRequest")
-public class LoginRequest {
-    private String accountName;
-    private String password;
+@XmlType(propOrder = {
+              "productCode"
+            , "productName"
+            , "quantity"})
+@XmlRootElement(name = "createAllocationRequest")
+public class CreateAllocationRequest {
+    private String productCode;
+    private String productName;
+    private Integer quantity;
 }

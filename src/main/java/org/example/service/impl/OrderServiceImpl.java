@@ -2,13 +2,16 @@ package org.example.service.impl;
 
 import org.example.dto.request.order.SearchOrderRequest;
 import org.example.entity.*;
+import org.example.model.UpdateOrderDTO;
 import org.example.repository.OrderRepository;
 import org.example.security.UserDetailImpl;
 import org.example.service.AccountService;
 import org.example.service.OrderService;
+import org.example.service.OrderStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,11 +19,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
+@Transactional
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private OrderStatusService orderStatusService;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -40,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
         order.setQuantity(quantity);
         order.setVersion(0);
         order.setIsDeleted(false);
-        OrderStatusEntity orderStatus = new OrderStatusEntity(1,"Đã đặt hàng");
+        OrderStatusEntity orderStatus = orderStatusService.findById(1);
         order.setOrderStatus(orderStatus);
         return orderRepository.save(order);
     }
@@ -135,4 +141,25 @@ public class OrderServiceImpl implements OrderService {
                         ,pageSize
                         ,false);
     }
+
+    @Override
+    public int updateOrder(UpdateOrderDTO updateOrderDTO) {
+        return orderRepository.updateOrder(
+                          updateOrderDTO.getOrderId()
+                        , updateOrderDTO.getProductId()
+                        , updateOrderDTO.getCustomerId()
+                        , updateOrderDTO.getQuantity()
+                        , updateOrderDTO.getVersion());
+    }
+
+    @Override
+    public OrderEntity findById(Integer orderId) {
+        return orderRepository.findById(orderId).orElse(null);
+    }
+
+    @Override
+    public int deleteOrder(Integer orderId) {
+        return orderRepository.deleteOrder(orderId);
+    }
+
 }

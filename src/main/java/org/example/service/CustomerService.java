@@ -5,7 +5,6 @@ import org.example.entity.AccountEntity;
 import org.example.entity.CustomerEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CustomerService {
     CustomerEntity saveCustomer(CustomerEntity customer);

@@ -7,11 +7,12 @@ import lombok.Setter;
 import org.example.entity.CustomerEntity;
 import org.example.entity.ProductEntity;
 import org.springframework.validation.Errors;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateOrderValidateDTO {
+public class UpdateOrderValidateDTO {
     private CustomerEntity customer;
     private ProductEntity product;
     private Errors errors;
