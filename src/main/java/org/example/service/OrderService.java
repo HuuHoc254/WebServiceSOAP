@@ -2,20 +2,32 @@ package org.example.service;
 
 import org.example.dto.request.order.SearchOrderRequest;
 import org.example.entity.AccountEntity;
-import org.example.entity.CustomerEntity;
-import org.example.entity.OrderEntity;
-import org.example.entity.ProductEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface OrderService {
-    OrderEntity createOrder(CustomerEntity customer, ProductEntity product, Integer quantity);
-
-    int totalRecordFindAll(AccountEntity account);
-
-    List<OrderEntity> findAll(AccountEntity account, int recordNumber, int pageSize);
 
     int totalRecordSearch(SearchOrderRequest request, AccountEntity account);
 
-    List<OrderEntity> search(SearchOrderRequest request, AccountEntity account, int recordNumber, int pageSize);
+    List<Map<String, Object>> search(SearchOrderRequest request, AccountEntity account, int recordNumber, int pageSize);
+
+
+    int deleteOrder(Integer orderId);
+
+    int totalFindCustomerZeroOrder( String  startDate
+                                  , String  endDate);
+
+    void saveOrder(StringBuilder sql);
+
+    List<Map<String, Object>> findCustomerZeroOrder(String startDate, String endDate, int recordNumber, int pageSize);
+
+    int totalFindProductBestSeller(String startDate, String endDate);
+
+    List<Map<String, Object>> findProductBestSeller(String startDate, String endDate, int recordNumber, int pageSize);
+
+    int totalFindProductZeroOrder( String  startDate, String  endDate);
+
+    List<Map<String, Object>> findProductZeroOrder(String startDate, String endDate, int recordNumber, int pageSize);
+
 }

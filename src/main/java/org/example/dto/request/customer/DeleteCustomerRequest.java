@@ -14,9 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "customerId", "accountId" })
+@XmlType(propOrder = { "customerId"})
 @XmlRootElement(name = "deleteCustomerRequest")
 public class DeleteCustomerRequest {
     private Integer customerId;
-    private Integer accountId;
 }

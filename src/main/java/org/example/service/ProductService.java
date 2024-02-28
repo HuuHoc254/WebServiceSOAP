@@ -5,15 +5,17 @@ import org.example.dto.request.product.UpdateProductRequest;
 import org.example.entity.ProductEntity;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 public interface ProductService {
-    long totalRowFindAll();
-    List<ProductEntity> findAll(int rowNumber, int pageSize);
+    int totalRowSearch(String productCode, String productName, boolean isAdmin);
 
-    int totalRowSearch(String productCode, String productName);
-
-    List<ProductEntity> search(String productCode, String productName, int rowNumber, int pageSize);
+    List<Map<String,Object>> search(
+                                    String  productCode
+                                ,   String  productName
+                                ,   boolean isAdmin
+                                ,   int     rowNumber
+                                ,   int     pageSize);
 
     ProductEntity createProduct(CreateProductRequest request);
 
@@ -32,4 +34,8 @@ public interface ProductService {
     ProductEntity findByProductCode(String productCode);
 
     ProductEntity findByProductName(String productName);
+
+    String getProductCodeByProductName(String productName);
+
+    String getProductNameByProductCode(String productCode);
 }

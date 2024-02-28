@@ -21,10 +21,6 @@ public class AllocationEntity {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private ProductEntity product;
-    private String address;
     private Integer quantity;
     private LocalDate allocationDate;
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    private AccountEntity account;
 }

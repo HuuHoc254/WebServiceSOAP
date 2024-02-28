@@ -1,37 +1,32 @@
 package org.example.service.impl;
 
 import org.example.dto.request.account.CreateAccountRequest;
-import org.example.dto.request.account.SearchAccountRequest;
 import org.example.dto.request.account.UpdateAccountRequest;
 import org.example.entity.AccountEntity;
 import org.example.entity.RoleEntity;
 import org.example.repository.AccountRepository;
 import org.example.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class AccountServiceImpl implements AccountService {
     @Autowired
     AccountRepository accountRepository;
     @Override
-    public AccountEntity saveAccount(CreateAccountRequest createAccountRequest) {
-        AccountEntity account = convertRequestToEntity(createAccountRequest);
-        RoleEntity roleEntity = new RoleEntity();
-        roleEntity.setRoleId(2);
-        roleEntity.setRoleName("STAFF");
-        roleEntity.setIsDeleted(false);
-        account.setRole(roleEntity);
-        accountRepository.save(account);
-        return account;
+    public int saveAccount(CreateAccountRequest request) {
+        return accountRepository.createAccount(
+                            request.getAccountName()
+                            ,request.getFullName()
+                            ,request.getPhoneNumber()
+                            ,request.getPassword());
     }
 
     private AccountEntity convertRequestToEntity(CreateAccountRequest createAccountRequest) {
@@ -45,16 +40,6 @@ public class AccountServiceImpl implements AccountService {
         account.setIsDeleted(false);
         return account;
     }
-    @Override
-    public long totalRowFindAll() {
-        return accountRepository.count();
-    }
-
-    @Override
-    public List<AccountEntity> findAll(int rowNumber, int pageSize) {
-        return accountRepository.findAll(rowNumber, pageSize);
-    }
-
     @Override
     public Optional<AccountEntity> findById(Integer accountId) {
         return accountRepository.findById(accountId);
@@ -90,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountEntity> search(String accountName, String phoneNumber, String fullName, int rowNumber, int pageSize) {
+    public List<Map<String,Object>> search(String accountName, String phoneNumber, String fullName, int rowNumber, int pageSize) {
         return accountRepository
                 .searchAccount(
                         accountName

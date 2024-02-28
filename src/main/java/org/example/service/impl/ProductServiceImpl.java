@@ -10,50 +10,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Service
+@Transactional
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
+
     @Override
-    public long totalRowFindAll() {
-        return productRepository.count();
+    public int totalRowSearch(String productCode, String productName, boolean isAdmin) {
+        return productRepository.countSearch(productCode,productName,isAdmin);
     }
 
     @Override
-    public List<ProductEntity> findAll(int rowNumber, int pageSize) {
-        return productRepository.findAll(rowNumber,pageSize);
-    }
+    public List<Map<String,Object>> search(String productCode, String productName,boolean isAdmin, int rowNumber, int pageSize) {
 
-    @Override
-    public int totalRowSearch(String productCode, String productName) {
-        return productRepository.countSearch(productCode,productName);
-    }
-
-    @Override
-    public List<ProductEntity> search(String productCode, String productName, int rowNumber, int pageSize) {
-        return productRepository.searchProduct(productCode,productName,rowNumber,pageSize);
+        return productRepository.searchProduct(productCode,productName,isAdmin,rowNumber,pageSize);
     }
 
     @Override
     public ProductEntity createProduct(CreateProductRequest request) {
-        ProductEntity productEntity = new ProductEntity();
-        BeanUtils.copyProperties(request,productEntity);
-        productEntity.setInventory_quantity(0);
-        productEntity.setVersion(0);
-        productEntity.setIsDeleted(false);
-        return productRepository.save(productEntity);
+        ProductEntity product = new ProductEntity();
+        BeanUtils.copyProperties(request,product);
+        boolean check = productRepository.createProduct(
+                                                 request.getProductCode()
+                                                ,request.getProductName()
+                                                ,request.getPurchasePrice()
+                                                ,request.getSalePrice()
+                                                        ) ==1;
+        return product;
     }
 
     @Override
     public boolean existsByProductCode(String productCode) {
-        return productRepository.existsByProductCode(productCode);
+        return productRepository.existsByProductCode(productCode)==1;
     }
+
     @Override
     public boolean existsByProductName(String productName) {
-        return productRepository.existsByProductName(productName);
+        return productRepository.existsByProductName(productName)==1;
     }
 
     @Override
@@ -63,12 +61,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean existsByProductNameAndProductIdNot(String productName, Integer productId) {
-        return productRepository.existsByProductNameAndProductIdNot(productName,productId);
+        return productRepository.existsByProductNameAndProductIdNot(productName,productId)==1;
     }
 
     @Override
     public boolean existsByProductCodeAndProductIdNot(String productCode, Integer productId) {
-        return productRepository.existsByProductCodeAndProductIdNot(productCode,productId);
+        return productRepository.existsByProductCodeAndProductIdNot(productCode,productId)==1;
     }
 
     @Override
@@ -96,11 +94,30 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductEntity findByProductCode(String productCode) {
-        return productRepository.findByProductCode(productCode).orElse(null);
+        return convertMapToProduct(productRepository.findByProductCode(productCode));
     }
 
     @Override
     public ProductEntity findByProductName(String productName) {
-        return productRepository.findByProductName(productName).orElse(null);
+        return convertMapToProduct(productRepository.findByProductName(productName));
+    }
+
+    @Override
+    public String getProductCodeByProductName(String productName) {
+        return convertMapToProduct(productRepository.findByProductName(productName)).getProductCode();
+    }
+
+    @Override
+    public String getProductNameByProductCode(String productCode) {
+        return convertMapToProduct(productRepository.findByProductCode(productCode)).getProductName();
+    }
+
+    private ProductEntity convertMapToProduct(Map<String, Object> map) {
+        ProductEntity product = new ProductEntity();
+        product.setProductId((Integer) map.get("product_id"));
+        product.setProductCode((String) map.get("product_code"));
+        product.setProductName((String) map.get("product_name"));
+        product.setSalePrice((Double) map.get("sale_price"));
+        return product;
     }
 }

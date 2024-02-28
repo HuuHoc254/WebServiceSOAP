@@ -16,9 +16,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
 @Endpoint
 public class LoginEndpoint {
     private static final String NAMESPACE_URI = "http://yournamespace.com";

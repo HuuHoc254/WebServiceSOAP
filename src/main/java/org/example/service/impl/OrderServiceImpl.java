@@ -1,65 +1,34 @@
 package org.example.service.impl;
 
+import jakarta.persistence.EntityManager;
 import org.example.dto.request.order.SearchOrderRequest;
-import org.example.entity.*;
+import org.example.entity.AccountEntity;
 import org.example.repository.OrderRepository;
-import org.example.security.UserDetailImpl;
 import org.example.service.AccountService;
 import org.example.service.OrderService;
+import org.example.service.OrderStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @Service
+@Transactional
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
+    EntityManager entityManager;
+    @Autowired
     private AccountService accountService;
+    @Autowired
+    private OrderStatusService orderStatusService;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-    @Override
-    public OrderEntity createOrder(CustomerEntity customer, ProductEntity product, Integer quantity) {
-        UserDetailImpl userDetails =(UserDetailImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        AccountEntity account = accountService.findByAccountName(userDetails.getAccountName());
-        LocalDateTime dateTime = LocalDateTime.now();
-        OrderEntity order = new OrderEntity();
-        order.setAccount(account);
-        order.setOrderDate(dateTime);
-        order.setProduct(product);
-        order.setCustomer(customer);
-        order.setAddressCustomer(customer.getAddress());
-        order.setPhoneNumberCustomer(customer.getPhoneNumber());
-        order.setUnitPrice(product.getSalePrice());
-        order.setQuantity(quantity);
-        order.setVersion(0);
-        order.setIsDeleted(false);
-        OrderStatusEntity orderStatus = new OrderStatusEntity(1,"Đã đặt hàng");
-        order.setOrderStatus(orderStatus);
-        return orderRepository.save(order);
-    }
-
-    @Override
-    public int totalRecordFindAll(AccountEntity account) {
-        if( (account.getRole().getRoleId())==1 ){
-            return orderRepository.totalRecordFindAll(true, account.getAccountId());
-        }
-        return orderRepository.totalRecordFindAll(false, account.getAccountId());
-    }
-
-    @Override
-    public List<OrderEntity> findAll(AccountEntity account, int recordNumber, int pageSize) {
-        if( (account.getRole().getRoleId())==1){
-            return orderRepository.findAll(true,account,recordNumber, pageSize);
-        }
-        return orderRepository.findAll(false,account,recordNumber,pageSize);
-    }
 
     @Override
     public int totalRecordSearch(SearchOrderRequest request, AccountEntity account) {
@@ -67,7 +36,6 @@ public class OrderServiceImpl implements OrderService {
         LocalDate beginDate = LocalDate.parse(request.getBeginOrderDate(), formatter);
         LocalDate endDate = LocalDate.parse(request.getEndOrderDate(), formatter);
 
-        if(account.getRole().getRoleId()==1){
             return orderRepository
                     .totalRecordSearch(
                             account.getAccountId()
@@ -80,29 +48,14 @@ public class OrderServiceImpl implements OrderService {
                             ,beginDate.atStartOfDay()
                             ,endDate.atTime(23,59)
                             ,request.getOrderStatusId()
-                            ,true);
-        }
-        return orderRepository
-                .totalRecordSearch(
-                        account.getAccountId()
-                        ,request.getAccountName()
-                        ,request.getStaffFullName()
-                        ,request.getProductCode()
-                        ,request.getProductName()
-                        ,request.getCustomerName()
-                        ,request.getCustomerPhoneNumber()
-                        ,beginDate.atStartOfDay()
-                        ,endDate.atTime(23,59)
-                        ,request.getOrderStatusId()
-                        ,false);
+                            ,account.getRole().getRoleId()==1);
+
     }
 
     @Override
-    public List<OrderEntity> search(SearchOrderRequest request, AccountEntity account, int recordNumber, int pageSize) {
+    public List<Map<String, Object>> search(SearchOrderRequest request, AccountEntity account, int recordNumber, int pageSize) {
         LocalDate beginDate = LocalDate.parse(request.getBeginOrderDate(), formatter);
         LocalDate endDate = LocalDate.parse(request.getEndOrderDate(), formatter);
-
-        if(account.getRole().getRoleId()==1){
             return orderRepository
                     .search(
                             account.getAccountId()
@@ -117,22 +70,54 @@ public class OrderServiceImpl implements OrderService {
                             ,request.getOrderStatusId()
                             ,recordNumber
                             ,pageSize
-                            ,true);
+                            ,account.getRole().getRoleId()==1);
         }
-         return orderRepository
-                .search(
-                        account.getAccountId()
-                        ,request.getAccountName()
-                        ,request.getStaffFullName()
-                        ,request.getProductCode()
-                        ,request.getProductName()
-                        ,request.getCustomerName()
-                        ,request.getCustomerPhoneNumber()
-                        ,beginDate.atStartOfDay()
-                        ,endDate.atTime(23,59)
-                        ,request.getOrderStatusId()
-                        ,recordNumber
-                        ,pageSize
-                        ,false);
+
+    @Override
+    public int deleteOrder(Integer orderId) {
+        return orderRepository.deleteOrder(orderId);
     }
+
+    @Override
+    public int totalFindCustomerZeroOrder(String startDate, String endDate) {
+        return orderRepository.totalFindCustomerZeroOrder(startDate,endDate);
+    }
+
+    @Override
+    public void saveOrder(StringBuilder sql) {
+        String[] split = sql.toString().split(";");
+        for (String s : split) {
+//          Kiểm tra xem câu lệnh có rỗng không trước khi thực hiện truy vấn
+            if (!s.trim().isEmpty()) {
+                int rowUpdate = entityManager.createNativeQuery(s).executeUpdate();
+                if(rowUpdate==0) throw new RuntimeException("UPDATE khong thanh cong!");
+            }
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> findCustomerZeroOrder(String startDate, String endDate, int recordNumber, int pageSize) {
+        return orderRepository.findCustomerZeroOrder(startDate,endDate,recordNumber,pageSize);
+    }
+
+    @Override
+    public int totalFindProductBestSeller(String startDate, String endDate) {
+        return orderRepository.totalFindProductBestSeller(startDate,endDate);
+    }
+
+    @Override
+    public List<Map<String, Object>> findProductBestSeller(String startDate, String endDate, int recordNumber, int pageSize) {
+        return orderRepository.findProductsBestSeller(startDate,endDate,recordNumber,pageSize);
+    }
+
+    @Override
+    public int totalFindProductZeroOrder(String startDate, String endDate) {
+        return orderRepository.totalFindProductZeroOrder(startDate,endDate);
+    }
+
+    @Override
+    public List<Map<String, Object>> findProductZeroOrder(String startDate, String endDate, int recordNumber, int pageSize) {
+        return orderRepository.findProductZeroOrders(startDate,endDate,recordNumber,pageSize);
+    }
+
 }

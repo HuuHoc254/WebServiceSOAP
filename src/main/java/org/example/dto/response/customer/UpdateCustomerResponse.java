@@ -14,10 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "updateCustomerResponse", namespace = "http://yournamespace.com")
-@XmlType(propOrder = { "errorTypes", "status" , "customerResponseType" })
+@XmlType(propOrder = { "errorTypes", "message" , "customerResponseType" })
 public class UpdateCustomerResponse {
     @XmlElement(name = "errorTypes")
     private List<ErrorTypeResponse> errorTypes;
-    private String status;
+    private String message;
     private CustomerResponseType customerResponseType;
 }

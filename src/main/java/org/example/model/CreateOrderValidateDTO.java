@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.entity.AccountEntity;
 import org.example.entity.CustomerEntity;
 import org.example.entity.ProductEntity;
 import org.springframework.validation.Errors;

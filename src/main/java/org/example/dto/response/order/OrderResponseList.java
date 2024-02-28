@@ -18,9 +18,9 @@ import java.util.List;
 @XmlRootElement(name = "orderResponseList", namespace = "http://yournamespace.com")
 @XmlType
 public class OrderResponseList {
+    private String message;
     @XmlElement(name = "errorTypes")
     private List<ErrorTypeResponse> errorTypes;
-    private String message;
     @XmlElement(name = "orderResponse")
     private List<OrderResponseType> orderResponses;
 }

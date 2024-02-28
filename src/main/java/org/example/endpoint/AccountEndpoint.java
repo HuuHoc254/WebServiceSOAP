@@ -4,7 +4,7 @@ import org.example.dto.request.account.*;
 import org.example.dto.response.*;
 import org.example.dto.response.account.AccountResponseList;
 import org.example.dto.response.account.AccountResponseType;
-import org.example.dto.response.account.CreateAccountResponse;
+import org.example.dto.response.account.AccountResponse;
 import org.example.entity.AccountEntity;
 import org.example.service.AccountService;
 import org.example.validate.account.AccountValidate;
@@ -20,67 +20,24 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Endpoint
 public class AccountEndpoint {
+    private final String ADMIN= "ROLE_ADMIN";
+    private final String URL_NAMESPACE= "http://yournamespace.com";
     @Autowired
     private AccountService accountService;
-
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
     private AccountValidate validate;
 
-    public AccountEndpoint() {
-    }
-
-    @PayloadRoot(namespace = "http://yournamespace.com", localPart = "loadAllAccount")
+    @PayloadRoot(namespace = URL_NAMESPACE, localPart = "deleteAccountRequest")
     @ResponsePayload
-    @Secured("ROLE_ADMIN")
-    public AccountResponseList loadAllAccount(@RequestPayload GetAccountsRequest request) {
-        AccountResponseList responseList = new AccountResponseList();
-        int pageSize = Optional.ofNullable(request.getPageSize()).orElse(5);
-        int pageIndex = Optional.ofNullable(request.getPageIndex()).orElse(0);
-
-        if (pageSize < 1) {
-            throw new RuntimeException("PageSize phải từ 1 trở lên!");
-        }
-
-//      Lấy tổng số nhân viên
-        int totalRow =(int) accountService.totalRowFindAll();
-
-//      Nếu không có nhân viên thì thông báo
-        if(totalRow==0){
-            throw new RuntimeException("Không tìm thấy account nào!");
-        }
-//      Nếu pageIndex vượt qua số hàng tìm được thì báo lỗi
-        if(totalRow <= pageIndex * pageSize){
-            throw new RuntimeException("Số trang không hợp lệ!");
-        }
-
-//Lấy danh sách record theo page index
-        List<AccountEntity> accounts = accountService.findAll( (pageIndex * pageSize),pageSize );
-
-//Chuyển đổi về XML
-        List<AccountResponseType> accountResponses = accounts
-                .stream()
-                .map(accountEntity -> {
-                    AccountResponseType response = new AccountResponseType();
-                    convertEntityToResponse(accountEntity, response);
-                    return response;
-                }).collect(Collectors.toList());
-
-        responseList.setAccountResponses(accountResponses);
-
-        responseList.setAccountResponses(accountResponses);
-        return responseList;
-    }
-
-    @PayloadRoot(namespace = "http://yournamespace.com", localPart = "deleteAccountRequest")
-    @ResponsePayload
-    @Secured("ROLE_ADMIN")
+    @Secured(ADMIN)
     public StatusResponse deleteAccount(@RequestPayload DeleteAccountRequest request) {
         StatusResponse response = new StatusResponse();
         Optional<AccountEntity> optionalAccount = accountService.findById(request.getAccountId());
@@ -98,14 +55,13 @@ public class AccountEndpoint {
 
     @PayloadRoot(namespace = "http://yournamespace.com", localPart = "createAccountRequest")
     @ResponsePayload
-    @Secured("ROLE_ADMIN")
-    public CreateAccountResponse createAccount(@RequestPayload CreateAccountRequest request) {
-        CreateAccountResponse response = new CreateAccountResponse();
-        Errors errors = new BeanPropertyBindingResult(request, "request");
+    @Secured(ADMIN)
+    public AccountResponse createAccount(@RequestPayload CreateAccountRequest request) {
+        AccountResponse response = new AccountResponse();
 
         try {
             // Thực hiện validation
-            validate.validateCreateAccount(request, errors);
+            Errors errors = validate.validateCreateAccount(request);
 
             // Nếu có lỗi validation
             if (errors.hasErrors()) {
@@ -123,68 +79,84 @@ public class AccountEndpoint {
 
             request.setPassword(passwordEncoder.encode(request.getPassword()));
 
-            AccountEntity account = accountService.saveAccount(request);
+            int row = accountService.saveAccount(request);
 
-            AccountResponseType accountResponseType = new AccountResponseType();
-            BeanUtils.copyProperties(account,accountResponseType);
+            if(row==1){
+                response.setStatus("Account create successfully");
+                AccountResponseType accountResponseType = new AccountResponseType();
+                BeanUtils.copyProperties(request,accountResponseType);
 
-            response.setAccountResponseType(accountResponseType);
-
-            response.setStatus("Account create successfully");
+                response.setAccountResponseType(accountResponseType);
+            }else {
+                throw new Exception("Insert Fail!");
+            }
         } catch (Exception e) {
             // Xử lý lỗi và đặt giá trị lỗi vào phản hồi
-//            response.setStatus("Error: " + e.getMessage());
+            response.setStatus("Error: " + e.getMessage());
         }
 
         return response;
     }
 
-    private void convertEntityToResponse(AccountEntity account, AccountResponseType response) {
-        response.setAccountId(account.getAccountId());
-        response.setAccountName(account.getAccountName());
-        response.setFullName(account.getFullName());
-        response.setPhoneNumber(account.getPhoneNumber());
-        response.setIsOnline(account.getIsOnline());
-        response.setIsDeleted(account.getIsDeleted());
-        response.setVersion(account.getVersion());
+    private AccountResponseType convertEntityToResponse(Map<String,Object> map) {
+        AccountResponseType response = new AccountResponseType();
+        response.setAccountId((Integer) map.get("account_id"));
+        response.setAccountName((String) map.get("account_name"));
+        response.setFullName((String) map.get("full_name"));
+        response.setPhoneNumber((String) map.get("phone_number"));
+        response.setIsOnline((Boolean) map.get("is_online"));
+        response.setIsDeleted((Boolean) map.get("is_deleted"));
+        response.setVersion((Integer) map.get("version"));
+        return response;
     }
 
     @PayloadRoot(namespace = "http://yournamespace.com", localPart = "updateAccountRequest")
     @ResponsePayload
-    @Secured("ROLE_ADMIN")
-    public StatusResponse updateAccount(@RequestPayload UpdateAccountRequest accountUpdateRequest) {
-        StatusResponse response = new StatusResponse();
-        Errors errors = new BeanPropertyBindingResult(accountUpdateRequest, "accountUpdateRequest");
+    @Secured(ADMIN)
+    public AccountResponse updateAccount(@RequestPayload UpdateAccountRequest request) {
+        AccountResponse response = new AccountResponse();
 
         try {
             // Thực hiện validation
-            validate.validateUpdateAccount(accountUpdateRequest, errors);
+            Errors errors = validate.validateUpdateAccount(request);
 
             // Nếu có lỗi validation
             if (errors.hasErrors()) {
-                throw new Exception(errors.getFieldError().getDefaultMessage());
-            }
-            accountService.saveAccount(accountUpdateRequest);
+                List<ErrorTypeResponse> errorListResponse =
+                        errors.getFieldErrors().stream().map(er ->{
+                            ErrorTypeResponse errorTypeResponse = new ErrorTypeResponse();
+                            errorTypeResponse.setErrorMessage(er.getDefaultMessage());
+                            return errorTypeResponse;
+                        }).collect(Collectors.toList());
 
-            response.setMessage("Account updated successfully");
+                response.setErrorTypes(errorListResponse);
+                throw new Exception("");
+            }
+            request.setPassword(passwordEncoder.encode(request.getPassword()));
+            accountService.saveAccount(request);
+            BeanUtils.copyProperties(request,response.getAccountResponseType());
+            response.setStatus("SUCCESS!");
 
         } catch (Exception e) {
+            response.setStatus("ERRORS!");
             // Xử lý lỗi và đặt giá trị lỗi vào phản hồi
-            response.setMessage("Error: " + e.getMessage());
         }
         return response;
     }
 
     @PayloadRoot(namespace = "http://yournamespace.com", localPart = "searchAccountRequest")
     @ResponsePayload
-    @Secured("ROLE_ADMIN")
+    @Secured(ADMIN)
     public AccountResponseList searchAccount(@RequestPayload SearchAccountRequest searchAccountRequest) {
         AccountResponseList responseList = new AccountResponseList();
         int pageSize = Optional.ofNullable(searchAccountRequest.getPageSize()).orElse(5);
-        int pageIndex = Optional.ofNullable(searchAccountRequest.getPageIndex()).orElse(0);
+        int pageNumber = Optional.ofNullable(searchAccountRequest.getPageNumber()).orElse(1);
 
         if (pageSize < 1) {
             throw new RuntimeException("PageSize phải từ 1 trở lên!");
+        }
+        if (pageNumber < 1) {
+            throw new RuntimeException("pageNumber phải từ 1 trở lên!");
         }
 
 //      Lấy tổng số hàng trong quá trình search
@@ -202,29 +174,23 @@ public class AccountEndpoint {
         int totalPage = (int) Math.ceil( ((double) totalRow /pageSize) );
 
 //      Nếu pageIndex vượt qua số hàng tìm được thì báo lỗi
-        if(totalRow <= pageIndex * pageSize){
+        if(totalRow <= (pageNumber-1) * pageSize){
             throw new RuntimeException("Số trang không hợp lệ!");
         }
 
 //      Lấy danh sách record theo page index
-        List<AccountEntity> accounts
+        List<Map<String,Object>> accounts
                 = accountService.search(
                          searchAccountRequest.getAccountName()
                         ,searchAccountRequest.getPhoneNumber()
                         ,searchAccountRequest.getFullName()
-                        ,(pageIndex * pageSize)
+                        ,((pageNumber-1) * pageSize)
                         ,pageSize);
 
 //Chuyển đổi về XML
         List<AccountResponseType> accountResponses = accounts
                 .stream()
-                .map(accountEntity -> {
-                    AccountResponseType response = new AccountResponseType();
-                    convertEntityToResponse(accountEntity, response);
-                    return response;
-                }).collect(Collectors.toList());
-
-        responseList.setAccountResponses(accountResponses);
+                .map(this::convertEntityToResponse).toList();
 
         responseList.setAccountResponses(accountResponses);
         return responseList;

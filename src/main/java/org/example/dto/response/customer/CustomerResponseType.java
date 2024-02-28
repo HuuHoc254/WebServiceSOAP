@@ -21,7 +21,7 @@ public class CustomerResponseType {
     private String customerName;
     private String phoneNumber;
     private String address;
-    private Integer accountId;
+    private String accountName;
     private Integer version;
     private Boolean isDeleted;
 

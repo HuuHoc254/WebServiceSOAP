@@ -25,8 +25,6 @@ import lombok.Setter;
         ,  "version"  })
 @XmlRootElement(name = "updateAccountRequest")
 public class UpdateAccountRequest {
-    // getters, setters, constructors
-    //    @XmlElement
     private Integer accountId;
     private String accountName;
     private String password;

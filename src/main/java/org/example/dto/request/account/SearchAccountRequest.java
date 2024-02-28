@@ -15,7 +15,7 @@ import lombok.Setter;
               "accountName"
             , "fullName"
             , "phoneNumber"
-            , "pageIndex"
+            , "pageNumber"
             , "pageSize"
             })
 @XmlRootElement(name = "searchAccountRequest")
@@ -23,8 +23,8 @@ public class SearchAccountRequest {
     private String accountName;
     private String fullName;
     private String phoneNumber;
-    @XmlElement(name = "pageIndex")
-    private Integer pageIndex;
+    @XmlElement(name = "pageNumber")
+    private Integer pageNumber;
     @XmlElement(name = "pageSize")
     private Integer pageSize;
 }

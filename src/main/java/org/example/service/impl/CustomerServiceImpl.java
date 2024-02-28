@@ -1,10 +1,8 @@
 package org.example.service.impl;
 
 import org.example.dto.request.customer.UpdateCustomerRequest;
-import org.example.dto.request.product.UpdateProductRequest;
 import org.example.entity.AccountEntity;
 import org.example.entity.CustomerEntity;
-import org.example.entity.ProductEntity;
 import org.example.repository.CustomerRepository;
 import org.example.service.AccountService;
 import org.example.service.CustomerService;
@@ -15,9 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @Service
+@Transactional
 public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
@@ -29,22 +28,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public long totalRowFindAll() {
-        return customerRepository.count();
-    }
-
-    @Override
-    public List<CustomerEntity> findAll(int rowNumber, int pageSize) {
-        return customerRepository.findAll(rowNumber, pageSize);
-    }
-
-    @Override
     public int totalRowSearch(String customerName, String phoneNumber) {
         return customerRepository.countSearch(customerName,phoneNumber);
     }
 
     @Override
-    public List<CustomerEntity> search(String customerName, String phoneNumber, int rowNumber, int pageSize) {
+    public List<Map<String,Object>> search(String customerName, String phoneNumber, int rowNumber, int pageSize) {
         return customerRepository
                 .searchCustomer(
                         customerName
@@ -54,8 +43,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public boolean deleteCustomer(Integer customerId, AccountEntity account) {
-        return customerRepository.deleteCustomer(customerId,account.getAccountId()) != 0;
+    public int deleteCustomer(Integer customerId, AccountEntity account) {
+        return customerRepository.deleteCustomer(
+                                             customerId
+                                            ,account.getAccountId()
+                                            ,account.getRole().getRoleId()==1);
     }
     @Override
     @Transactional
@@ -80,20 +72,21 @@ public class CustomerServiceImpl implements CustomerService {
         return customer;
     }
     @Override
-    public CustomerEntity findByPhoneNumber(String phoneNumber) {
-        return customerRepository.findByPhoneNumber(phoneNumber).orElse(null);
+    public Map<String,Object> findByPhoneNumber(String phoneNumber) {
+        return customerRepository.findByPhoneNumber(phoneNumber);
     }
     @Override
     public boolean existsByPhoneNumber(String phoneNumber) {
-        return customerRepository.existsByPhoneNumber(phoneNumber);
+        return customerRepository.existsByPhoneNumber(phoneNumber)==1;
     }
     @Override
     public boolean existsByPhoneNumberAndCustomerIdNot(String phoneNumber, Integer customerId) {
-        return customerRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber,customerId);
+        return customerRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber,customerId)==1;
     }
 
     @Override
-    public CustomerEntity findByCustomerName(String customerName) {
+    public Map<String,Object> findByCustomerName(String customerName) {
         return customerRepository.findByCustomerName(customerName);
     }
+
 }

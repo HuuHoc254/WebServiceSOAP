@@ -33,6 +33,4 @@ public class AccountEntity {
     private List<CustomerEntity> customerList;
     @OneToMany(mappedBy = "account",fetch = FetchType.EAGER)
     private List<OrderEntity> orderList;
-    @OneToMany(mappedBy = "account",fetch = FetchType.EAGER)
-    private List<AllocationEntity> allocationList;
 }

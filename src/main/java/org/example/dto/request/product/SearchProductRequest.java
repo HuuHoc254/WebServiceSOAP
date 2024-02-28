@@ -14,15 +14,15 @@ import lombok.Setter;
 @XmlType(propOrder = {
         "productCode"
         , "productName"
-        , "pageIndex"
+        , "pageNumber"
         , "pageSize"
 })
 @XmlRootElement(name = "searchProductRequest")
 public class SearchProductRequest {
     private String productCode;
     private String productName;
-    @XmlElement(name = "pageIndex")
-    private Integer pageIndex;
+    @XmlElement(name = "pageNumber")
+    private Integer pageNumber;
     @XmlElement(name = "pageSize")
     private Integer pageSize;
 }
