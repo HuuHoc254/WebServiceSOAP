@@ -13,6 +13,8 @@ public class AllocationServiceImpl implements AllocationService {
     private AllocationRepository allocationRepository;
     @Override
     public void allocation(Integer productId, Integer quantity) {
-        allocationRepository.AllocateInventory(productId,quantity);
+        allocationRepository.createAllocation(productId,quantity);
+        allocationRepository.allocateInventory(productId,quantity);
     }
+
 }

@@ -5,14 +5,11 @@ import org.example.dto.request.account.UpdateAccountRequest;
 import org.example.entity.AccountEntity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface AccountService {
-    AccountEntity saveAccount(CreateAccountRequest createAccountRequest);
-
-    long totalRowFindAll();
-
-    List<AccountEntity> findAll(int rowNumber, int pageSize);
+    int saveAccount(CreateAccountRequest createAccountRequest);
 
     Optional<AccountEntity> findById(Integer accountId);
 
@@ -22,7 +19,7 @@ public interface AccountService {
 
     int totalRowSearch(String accountName, String phoneNumber, String fullName);
 
-    List<AccountEntity> search( String accountName
+    List<Map<String,Object>> search(String accountName
                               , String phoneNumber
                               , String fullName
                               , int rowNumber

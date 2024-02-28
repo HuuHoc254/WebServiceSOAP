@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -27,22 +28,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public long totalRowFindAll() {
-        return customerRepository.count();
-    }
-
-    @Override
-    public List<CustomerEntity> findAll(int rowNumber, int pageSize) {
-        return customerRepository.findAll(rowNumber, pageSize);
-    }
-
-    @Override
     public int totalRowSearch(String customerName, String phoneNumber) {
         return customerRepository.countSearch(customerName,phoneNumber);
     }
 
     @Override
-    public List<CustomerEntity> search(String customerName, String phoneNumber, int rowNumber, int pageSize) {
+    public List<Map<String,Object>> search(String customerName, String phoneNumber, int rowNumber, int pageSize) {
         return customerRepository
                 .searchCustomer(
                         customerName
@@ -52,8 +43,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public boolean deleteCustomer(Integer customerId, AccountEntity account) {
-        return customerRepository.deleteCustomer(customerId,account.getAccountId()) != 0;
+    public int deleteCustomer(Integer customerId, AccountEntity account) {
+        return customerRepository.deleteCustomer(
+                                             customerId
+                                            ,account.getAccountId()
+                                            ,account.getRole().getRoleId()==1);
     }
     @Override
     @Transactional
@@ -78,20 +72,21 @@ public class CustomerServiceImpl implements CustomerService {
         return customer;
     }
     @Override
-    public CustomerEntity findByPhoneNumber(String phoneNumber) {
-        return customerRepository.findByPhoneNumber(phoneNumber).orElse(null);
+    public Map<String,Object> findByPhoneNumber(String phoneNumber) {
+        return customerRepository.findByPhoneNumber(phoneNumber);
     }
     @Override
     public boolean existsByPhoneNumber(String phoneNumber) {
-        return customerRepository.existsByPhoneNumber(phoneNumber);
+        return customerRepository.existsByPhoneNumber(phoneNumber)==1;
     }
     @Override
     public boolean existsByPhoneNumberAndCustomerIdNot(String phoneNumber, Integer customerId) {
-        return customerRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber,customerId);
+        return customerRepository.existsByPhoneNumberAndCustomerIdNot(phoneNumber,customerId)==1;
     }
 
     @Override
-    public CustomerEntity findByCustomerName(String customerName) {
+    public Map<String,Object> findByCustomerName(String customerName) {
         return customerRepository.findByCustomerName(customerName);
     }
+
 }

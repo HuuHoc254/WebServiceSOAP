@@ -1,4 +1,4 @@
-package org.example.dto.request.customer;
+package org.example.dto.response.order;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -9,13 +9,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "customerId"})
-@XmlRootElement(name = "deleteCustomerRequest")
-public class DeleteCustomerRequest {
-    private Integer customerId;
+@XmlRootElement(name = "saveOrderResponse", namespace = "http://yournamespace.com")
+@XmlType(propOrder = { "ordinalNumber", "errors" })
+public class SaveOrderResponse {
+    private String ordinalNumber;
+    private List<String> errors;
 }

@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "customerResponse", namespace = "http://yournamespace.com")
+@XmlRootElement(name = "productResponse", namespace = "http://yournamespace.com")
 @XmlType
 public class ProductResponseType {
     private Integer productId;

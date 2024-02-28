@@ -8,70 +8,134 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Integer> {
-    boolean existsByPhoneNumberAndAccountIdNot(String phoneNumber,Integer accountId);
-   /* SELECT COUNT(*) > 0
-    FROM your_entity_table
-    WHERE account_name = :accountName
-    AND account_id != :accountId;*/
-    boolean existsByAccountNameAndAccountIdNot(String accountName,Integer accountId);
+    final String SQL_SEARCH =   " FROM"
+                              + "      account"
+                              + " WHERE"
+                              +     "  account_name    LIKE CONCAT(:accountName, '%')"
+                              + " AND  phone_number    LIKE CONCAT(:phoneNumber, '%')"
+                              + " AND  full_name       LIKE CONCAT(:fullName, '%')" ;
+    @Query(value =    " SELECT"
+                    + "     COUNT(*)"
+                    + " FROM"
+                    + "     account"
+                    + " WHERE"
+                    + "     phone_number = :phoneNumber"
+                    + " AND account_id  <> :accountId"
+            ,nativeQuery = true)
+    int existsByPhoneNumberAndAccountIdNot(@Param("phoneNumber")    String  phoneNumber
+                                          ,@Param("accountId")      Integer accountId);
+    @Query(value =    " SELECT"
+                    + "     COUNT(*)"
+                    + " FROM"
+                    + "     account"
+                    + " WHERE"
+                    + "     account_name = :accountName"
+                    + " AND account_id  <> :accountId"
+            ,nativeQuery = true)
+    int existsByAccountNameAndAccountIdNot(@Param("accountName")    String  accountName
+                                          ,@Param("accountId")      Integer accountId);
 
-    boolean existsByAccountName(String accountName);
+    @Query(value =    " SELECT"
+                    + "     COUNT(*)"
+                    + " FROM"
+                    + "     account"
+                    + " WHERE"
+                    + "     account_name = :accountName"
+            ,nativeQuery = true)
+    int existsByAccountName(@Param("accountName") String accountName);
 
-    boolean existsByPhoneNumber(String phoneNumber);
+    @Query(value =    " SELECT"
+            + "     COUNT(*)"
+            + " FROM"
+            + "     account"
+            + " WHERE"
+            + "     phone_number = :phoneNumber"
+            ,nativeQuery = true)
+    int existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
     @Modifying
-    @Query(   "UPDATE AccountEntity e "
-            + "SET e.accountName = :accountName"
-            + ", e.password = :password"
-            + ", e.fullName = :fullName"
-            + ", e.phoneNumber = :phoneNumber"
-            + ", e.version = e.version + 1"
-            + " WHERE e.accountId = :accountId AND e.version = :version")
+    @Query(   value = " UPDATE"
+                    + "     account"
+                    + " SET     "
+                    + "     account_name    = :accountName"
+                    + ",    password        = :password"
+                    + ",    fullName        = :fullName"
+                    + ",    phoneNumber     = :phoneNumber"
+                    + ",    version         = version + 1"
+                    + " WHERE"
+                    + "     account_id      = :accountId"
+                    + " AND version         = :version"
+            ,nativeQuery = true)
     int updateAccount(
-            @Param("accountId") Integer accountId,
-            @Param("accountName") String accountName,
-            @Param("password") String password,
-            @Param("fullName") String fullName,
-            @Param("phoneNumber") String phoneNumber,
-            @Param("version") Integer version
+            @Param("accountId")     Integer accountId,
+            @Param("accountName")   String  accountName,
+            @Param("password")      String  password,
+            @Param("fullName")      String  fullName,
+            @Param("phoneNumber")   String  phoneNumber,
+            @Param("version")       Integer version
     );
-    @Query(   "SELECT COUNT(e)"
-            + " FROM AccountEntity e"
-            + " WHERE e.accountName LIKE CONCAT(:accountName, '%')"
-            + " AND e.phoneNumber LIKE CONCAT(:phoneNumber, '%')"
-            + " AND e.fullName LIKE CONCAT(:fullName, '%')")
+    @Query( value =   " SELECT"
+                    + "     COUNT(*)"
+                    + SQL_SEARCH
+            ,nativeQuery = true)
     int countSearch(
-            @Param("accountName") String accountName,
-            @Param("phoneNumber") String phoneNumber,
-            @Param("fullName") String fullName
+            @Param("accountName")   String accountName,
+            @Param("phoneNumber")   String phoneNumber,
+            @Param("fullName")      String fullName
     );
 
-    @Query(   "SELECT e FROM AccountEntity e"
-            + " WHERE e.accountName LIKE CONCAT(:accountName, '%')"
-            + " AND e.phoneNumber LIKE CONCAT(:phoneNumber, '%')"
-            + " AND e.fullName LIKE CONCAT(:fullName, '%')"
-            + " ORDER BY e.fullName"
-            + " LIMIT :pageSize OFFSET :rowNumber")
-    List<AccountEntity> searchAccount(
-            @Param("accountName") String accountName,
-            @Param("phoneNumber") String phoneNumber,
-            @Param("fullName") String fullName,
-            @Param("rowNumber") int rowNumber,
-            @Param("pageSize") int pageSize
+    @Query( value =   " SELECT"
+                    +     "  account_id"
+                    +     ", account_name"
+                    +     ", full_name"
+                    +     ", phone_number"
+                    +     ", is_online"
+                    +     ", version"
+                    +     ", is_deleted"
+                    + SQL_SEARCH
+                    + " ORDER BY"
+                    +     "  CASE"
+                    +     "  WHEN is_deleted = TRUE"
+                    +     "  THEN 1 ELSE 0 END"
+                    + ",SUBSTRING_INDEX(full_name, ' ', -1)"
+                    + " LIMIT :pageSize OFFSET :rowNumber"
+            ,nativeQuery = true)
+    List<Map<String,Object>> searchAccount(
+            @Param("accountName")   String  accountName,
+            @Param("phoneNumber")   String  phoneNumber,
+            @Param("fullName")      String  fullName,
+            @Param("rowNumber")     int     rowNumber,
+            @Param("pageSize")      int     pageSize
     );
-
-   @Query(   "SELECT e FROM AccountEntity e"
-           + " ORDER BY e.accountId"
-           + " LIMIT :pageSize OFFSET :rowNumber")
-   List<AccountEntity> findAll(
-            @Param("rowNumber") int rowNumber
-           ,@Param("pageSize") int pageSize );
-
     Optional<AccountEntity> findByAccountName(String username);
     Optional<AccountEntity> findByToken(String token);
+
+    @Modifying
+    @Query(value =    " INSERT INTO"
+                +           " account"
+                +               "("
+                +                   "  account_name"
+                +                   ", full_name"
+                +                   ", phone_number"
+                +                   ", password"
+                +               ")"
+                +     " VALUE"
+                +           "("
+                +               "  :accountName"
+                +               ", :fullName"
+                +               ", :phoneNumber"
+                +               ", :password"
+                +           ")"
+            ,nativeQuery = true)
+    int createAccount(   @Param("accountName")  String accountName
+                        ,@Param("fullName")     String fullName
+                        ,@Param("phoneNumber")  String phoneNumber
+                        ,@Param("password")     String password);
+
 }
 

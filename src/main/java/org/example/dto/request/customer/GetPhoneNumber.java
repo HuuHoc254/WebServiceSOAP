@@ -14,8 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "customerId"})
-@XmlRootElement(name = "deleteCustomerRequest")
-public class DeleteCustomerRequest {
-    private Integer customerId;
+@XmlType
+@XmlRootElement(name = "getPhoneNumber")
+public class GetPhoneNumber {
+    private String customerName;
 }

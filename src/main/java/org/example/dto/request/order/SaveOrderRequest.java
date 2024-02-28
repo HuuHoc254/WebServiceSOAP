@@ -14,21 +14,18 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder ={
-          "orderId"
+@XmlType(namespace = "http://yournamespace.com", propOrder ={
+        "ordinalNumber"
+        , "orderId"
         , "productCode"
-        , "productName"
         , "quantity"
-        , "customerName"
-        , "phoneNumber"
+        , "phoneNumberCustomer"
         , "version" })
-@XmlRootElement(name = "updateOrderRequest")
-public class UpdateOrderRequest {
+public class SaveOrderRequest {
+    private Integer ordinalNumber;
     private Integer orderId;
-    private String productCode;
-    private String productName;
+    private String  productCode;
     private Integer quantity;
-    private String customerName;
-    private String phoneNumber;
+    private String  phoneNumberCustomer;
     private Integer version;
 }

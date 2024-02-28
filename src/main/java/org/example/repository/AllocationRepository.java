@@ -10,10 +10,16 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AllocationRepository extends JpaRepository<AllocationEntity, Integer> {
-    @Procedure(name = "AllocateInventory")
+    @Procedure(name = "allocate_inventory")
     @Modifying
-    void AllocateInventory(
+    void allocateInventory(
               @Param("productId") Integer productId
             , @Param("quantity") Integer quantity );
 
+    @Modifying
+    @Query(value = " into allocation(product_id,quantity,allocation_date)"
+                 + "value(:productId,:quantity,current_date())", nativeQuery = true)
+    void createAllocation(
+              @Param("productId") Integer productId
+            , @Param("quantity") Integer quantity );
 }

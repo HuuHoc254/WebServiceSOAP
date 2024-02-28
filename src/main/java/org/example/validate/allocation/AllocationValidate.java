@@ -13,7 +13,7 @@ import org.springframework.validation.Errors;
 public class AllocationValidate {
     @Autowired
     private ProductService productService;
-    public CreateAllocationValidateDTO validateCreateOrder(CreateAllocationRequest request) {
+    public CreateAllocationValidateDTO validateCreateAllocation(CreateAllocationRequest request) {
         CreateAllocationValidateDTO dto = new CreateAllocationValidateDTO();
         Errors errors = new BeanPropertyBindingResult(request, "createAllocation");
         //      Tìm sản phẩm theo mã

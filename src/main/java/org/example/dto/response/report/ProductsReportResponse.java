@@ -1,10 +1,11 @@
-package org.example.dto.response.product;
+package org.example.dto.response.report;
 
 import jakarta.xml.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.List;
 
 @Setter
@@ -12,9 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "productResponseList", namespace = "http://yournamespace.com")
+@XmlRootElement(name = "products", namespace = "http://yournamespace.com")
 @XmlType
-public class ProductResponseList {
-    @XmlElement(name = "productResponse")
-    private List<ProductResponseType> productResponses;
+public class ProductsReportResponse {
+    @XmlElement(name = "product")
+    private List<ProductReportResponse> productsBestSeller;
 }

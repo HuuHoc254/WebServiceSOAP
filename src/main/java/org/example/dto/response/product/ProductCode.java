@@ -1,4 +1,4 @@
-package org.example.dto.request.customer;
+package org.example.dto.response.product;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
@@ -14,8 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(propOrder = { "customerId"})
-@XmlRootElement(name = "deleteCustomerRequest")
-public class DeleteCustomerRequest {
-    private Integer customerId;
+@XmlRootElement(name = "productCode", namespace = "http://yournamespace.com")
+@XmlType
+public class ProductCode {
+    private String productCode;
 }

@@ -33,13 +33,12 @@ public class AllocationEndpoint {
 
         try {
             // Thực hiện validation
-            CreateAllocationValidateDTO dto = validate.validateCreateOrder(request);
+            CreateAllocationValidateDTO dto = validate.validateCreateAllocation(request);
 
 //             Nếu có lỗi validation
             if (dto.getErrors().hasErrors()) {
                 throw new Exception(Objects.requireNonNull(dto.getErrors().getFieldError()).getDefaultMessage());
             }
-
             allocationService.allocation(dto.getProduct().getProductId(),request.getQuantity());
 
             response.setMessage("Phân bổ thành công!");
