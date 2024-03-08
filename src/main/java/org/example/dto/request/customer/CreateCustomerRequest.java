@@ -18,12 +18,10 @@ import lombok.Setter;
 @XmlType(propOrder = {
         "customerName"
         , "phoneNumber"
-        , "accountId"
         , "address"  })
 @XmlRootElement(name = "createCustomerRequest")
 public class CreateCustomerRequest {
     private String customerName;
     private String phoneNumber;
-    private Integer accountId;
     private String address;
 }

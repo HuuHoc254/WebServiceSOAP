@@ -156,15 +156,15 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
                     @Param("startDate")        String   startDate
                   , @Param("endDate")          String   endDate
                                 );
-    @Query( value = " SELECT DISTINCT"
-                  + "       c.customer_id"
-                  + ",      c.customer_name"
-                  + ",      c.phone_number"
-                  + ",      c.address"
-                  + SQL_CUSTOMER_ZERO_ORDER
-                  + " ORDER BY"
-                  + "       SUBSTRING_INDEX(c.customer_name, ' ', -1)"
-                  + " LIMIT :pageSize OFFSET :recordNumber"
+    @Query( value   = " SELECT DISTINCT"
+                    + "       c.customer_id"
+                    + ",      c.customer_name"
+                    + ",      c.phone_number"
+                    + ",      c.address"
+                    + SQL_CUSTOMER_ZERO_ORDER
+                    + " ORDER BY"
+                    + "       SUBSTRING_INDEX(c.customer_name, ' ', -1)"
+                    + " LIMIT :pageSize OFFSET :recordNumber"
             ,nativeQuery = true)
     List<Map<String,Object>> findCustomerZeroOrder(
                      @Param("startDate")        String  startDate
@@ -173,16 +173,16 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
                    , @Param("pageSize")         int     pageSize
                    );
 
-    @Query( value = " SELECT"
-                  + "       p.product_id"
-                  + ",      p.product_code"
-                  + ",      p.product_name"
-                  + ",      SUM(o.quantity) as quantity"
-                  + SQL_PRODUCT_BEST_SELLER
-                  + " ORDER BY"
-                  + "       quantity DESC"
-                  + ",      p.product_id"
-                  + " LIMIT :pageSize OFFSET :recordNumber"
+    @Query( value   = " SELECT"
+                    + "       p.product_id"
+                    + ",      p.product_code"
+                    + ",      p.product_name"
+                    + ",      SUM(o.quantity) as quantity"
+                    + SQL_PRODUCT_BEST_SELLER
+                    + " ORDER BY"
+                    + "       quantity DESC"
+                    + ",      p.product_id"
+                    + " LIMIT :pageSize OFFSET :recordNumber"
             ,nativeQuery = true)
     List<Map<String,Object>> findProductsBestSeller(
                       @Param("startDate")        String startDate
@@ -206,8 +206,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
                     , @Param("recordNumber")     int    recordNumber
                     , @Param("pageSize")         int    pageSize);
 
-    @Query( value =
-                    " SELECT COUNT(*)"
+    @Query( value =   " SELECT COUNT(*)"
                     + " FROM ("
                     + " SELECT COUNT(*)"
                     + SQL_PRODUCT_BEST_SELLER

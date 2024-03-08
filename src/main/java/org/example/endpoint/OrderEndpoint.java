@@ -368,7 +368,6 @@ public class OrderEndpoint {
         return responseList;
     }
 
-
     private ProductReportResponse convertProductToResponse(Map<String, Object> map) {
         ProductReportResponse response = new ProductReportResponse();
         response.setProductId((Integer) map.get("product_id"));

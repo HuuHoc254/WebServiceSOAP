@@ -51,13 +51,8 @@ public class CustomerEndpoint {
             if ( errors.hasErrors() ) {
                 throw new Exception( errors.getFieldError().getDefaultMessage() );
             }
-
-            Optional<AccountEntity> accountOptional = accountService.findById(createCustomer.getAccountId());
-
-            if ( accountOptional.isEmpty() ) {
-                throw new Exception( "Account ID không tồn tại!" );
-            }
-            AccountEntity account = accountOptional.get();
+            UserDetailImpl userDetail = (UserDetailImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            AccountEntity account = accountService.findById(userDetail.getAccountId()).orElse(null);
 
 //          Chuyển đổi từ request sang một entity để lưu
             CustomerEntity customer = new CustomerEntity();

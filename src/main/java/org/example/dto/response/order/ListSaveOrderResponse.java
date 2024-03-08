@@ -14,9 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name = "listSaveOrderResponse", namespace = "http://yournamespace.com")
-@XmlType(propOrder = { "saveOrderResponses", "status" })
+@XmlType(propOrder = { "status", "saveOrderResponses"})
 public class ListSaveOrderResponse {
+    private String status;
     @XmlElement(name = "errorTypes")
     private List<SaveOrderResponse> saveOrderResponses;
-    private String status;
+
 }

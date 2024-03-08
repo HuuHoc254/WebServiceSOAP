@@ -1,5 +1,6 @@
 package org.example.endpoint;
 
+import org.apache.coyote.BadRequestException;
 import org.example.dto.request.account.LoginRequest;
 import org.example.dto.response.StatusResponse;
 import org.example.entity.AccountEntity;
@@ -33,7 +34,7 @@ public class LoginEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "loginRequest")
     @ResponsePayload
-    public StatusResponse login(@RequestPayload LoginRequest loginRequest) {
+    public StatusResponse login(@RequestPayload LoginRequest loginRequest) throws BadRequestException {
         String accountName = loginRequest.getAccountName();
         String password = loginRequest.getPassword();
 
@@ -56,7 +57,7 @@ public class LoginEndpoint {
                     ": token: "+token);
         } catch (AuthenticationException e) {
             // Xử lý ngoại lệ khi đăng nhập không thành công
-            return new StatusResponse(e.getMessage());
+            throw new BadRequestException();
         }
     }
 }
