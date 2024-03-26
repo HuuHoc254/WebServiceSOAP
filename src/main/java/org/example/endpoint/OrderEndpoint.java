@@ -63,9 +63,9 @@ public class OrderEndpoint {
             // Thực hiện validation
             ListSaveOrderDTO dto = validate.validateSaveOrder(request, account);
 
-            if(!dto.getListOrder().isEmpty()){
+            if(!dto.getListErrors().isEmpty()){
                 List<SaveOrderResponse> list =
-                dto.getListOrder().stream().map(er ->{
+                dto.getListErrors().stream().map(er ->{
                     SaveOrderResponse saveOrderResponse = new SaveOrderResponse();
                     saveOrderResponse.setOrdinalNumber("Đơn hàng thứ "+ er.getOrdinalNumber());
                     saveOrderResponse.setErrors(er.getErrorTypes());
@@ -75,7 +75,7 @@ public class OrderEndpoint {
                 throw new Exception("Có lỗi validate!");
             }
 
-            orderService.saveOrder(dto.getSql());
+            orderService.saveAll(dto.getListOrder());
 
             response.setStatus("Tạo đơn hàng thành công!");
         } catch (Exception e) {
@@ -154,6 +154,7 @@ public class OrderEndpoint {
     }
     private OrderResponseType convertOrderToResponse(Map<String,Object> map, String role) {
         OrderResponseType response = new OrderResponseType();
+        response.setOrderId((Integer) map.get("orderId"));
         Timestamp orderDate = (Timestamp) map.get("orderDate");
         // Chuyển đổi các giá trị từ Map sang OrderResponseDTO
         response.setOrderDateTime(orderDate.toLocalDateTime().format(formatter));
@@ -231,7 +232,7 @@ public class OrderEndpoint {
 
 //      Nếu tất cả khách hàng đều mua rồi
         if(totalRecord==0){
-            throw new RuntimeException("Tất cả khách hàng đều đã mua sản phẩm!");
+            throw new RuntimeException("Tất cả khách hàng đều đã mua ít nhất 1 sản phẩm!");
         }
 //      Nếu pageNumber vượt qua số hàng tìm được thì báo lỗi
         if( totalRecord <= (pageNumber-1) * pageSize ){
@@ -343,7 +344,7 @@ public class OrderEndpoint {
 
 //      Nếu tất cả khách hàng đều mua rồi
         if(totalRecord==0){
-            throw new RuntimeException("Tất cả khách hàng đều đã mua sản phẩm!");
+            throw new RuntimeException("Tất cả sản phẩm đều đã được đặt hàng !");
         }
 //      Nếu pageNumber vượt qua số hàng tìm được thì báo lỗi
         if( totalRecord <= (pageNumber-1) * pageSize ){

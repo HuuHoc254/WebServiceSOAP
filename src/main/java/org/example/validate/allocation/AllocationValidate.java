@@ -16,19 +16,23 @@ public class AllocationValidate {
     public CreateAllocationValidateDTO validateCreateAllocation(CreateAllocationRequest request) {
         CreateAllocationValidateDTO dto = new CreateAllocationValidateDTO();
         Errors errors = new BeanPropertyBindingResult(request, "createAllocation");
-        //      Tìm sản phẩm theo mã
-        ProductEntity product = null;
-        if( (request.getProductCode()!=null)
-                && (!request.getProductCode().isEmpty()) )
-        {
-            product = productService.findByProductCode(request.getProductCode());
-        }
-
-//      Nếu không tìm thấy thì ghi nhận lỗi
-        if(product==null){
-            errors.rejectValue("productCode", "product.notFound", "Không tìm thấy thông tin sản phẩm!.");
+        if( request.getQuantity() <1){
+            errors.rejectValue("quantity", "quantity.invalid", "Số lượng không hợp lệ.");
         }else {
-            dto.setProduct(product);
+            //      Tìm sản phẩm theo mã
+            ProductEntity product = null;
+            if( (request.getProductCode()!=null)
+                    && (!request.getProductCode().isEmpty()) )
+            {
+                product = productService.findByProductCode(request.getProductCode());
+            }
+
+    //      Nếu không tìm thấy thì ghi nhận lỗi
+            if(product==null){
+                errors.rejectValue("productCode", "product.notFound", "Không tìm thấy thông tin sản phẩm!.");
+            }else {
+                dto.setProduct(product);
+            }
         }
         dto.setErrors(errors);
         return dto;

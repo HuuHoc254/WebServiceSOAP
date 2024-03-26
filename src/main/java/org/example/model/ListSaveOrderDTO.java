@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ListSaveOrderDTO {
-    private List<ErrorDTO> listOrder;
-    private StringBuilder sql;
+    private List<ErrorDTO> listErrors;
+    private List<SaveOrderDTO> listOrder;
 }

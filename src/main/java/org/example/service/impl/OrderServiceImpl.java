@@ -3,6 +3,7 @@ package org.example.service.impl;
 import jakarta.persistence.EntityManager;
 import org.example.dto.request.order.SearchOrderRequest;
 import org.example.entity.AccountEntity;
+import org.example.model.SaveOrderDTO;
 import org.example.repository.OrderRepository;
 import org.example.service.AccountService;
 import org.example.service.OrderService;
@@ -47,7 +48,8 @@ public class OrderServiceImpl implements OrderService {
                             ,request.getCustomerPhoneNumber()
                             ,beginDate.atStartOfDay()
                             ,endDate.atTime(23,59)
-                            ,request.getOrderStatusId()
+                            ,request.getOrder()
+                            ,request.getAllocation()
                             ,account.getRole().getRoleId()==1);
 
     }
@@ -67,7 +69,8 @@ public class OrderServiceImpl implements OrderService {
                             ,request.getCustomerPhoneNumber()
                             ,beginDate.atStartOfDay()
                             ,endDate.atTime(23,59)
-                            ,request.getOrderStatusId()
+                            ,request.getOrder()
+                            ,request.getAllocation()
                             ,recordNumber
                             ,pageSize
                             ,account.getRole().getRoleId()==1);
@@ -93,6 +96,40 @@ public class OrderServiceImpl implements OrderService {
                 if(rowUpdate==0) throw new RuntimeException("UPDATE khong thanh cong!");
             }
         }
+    }
+
+    @Override
+    public void saveAll(List<SaveOrderDTO> listOrder) {
+        listOrder.forEach(o ->{
+            if(o.getOrderId()!=0){
+                int rowUpdate = orderRepository.updateOrder(
+                                                         o.getOrderId()
+                                                        ,o.getProductId()
+                                                        ,o.getUnitPrice()
+                                                        ,o.getQuantity()
+                                                        ,o.getCustomerId()
+                                                        ,o.getAddress()
+                                                        ,o.getPhoneNumber()
+                                                        ,o.getVersion()
+                                                        );
+                if(rowUpdate<1){
+                    throw new RuntimeException("Phiên bản của đơn hàng "+ o.getOrdinalNumber() + " không trùng khớp!");
+                }
+            }else {
+                int rowUpdate = orderRepository.insertOrder(
+                                                         o.getProductId()
+                                                        ,o.getUnitPrice()
+                                                        ,o.getQuantity()
+                                                        ,o.getCustomerId()
+                                                        ,o.getPhoneNumber()
+                                                        ,o.getAddress()
+                                                        ,o.getAccountId()
+                                                            );
+                if(rowUpdate<1){
+                    throw new RuntimeException("Đơn hàng "+ o.getOrdinalNumber() + " không thêm được!");
+                }
+            }
+        });
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.example.entity.CustomerEntity;
 import org.example.entity.ProductEntity;
 import org.example.model.ErrorDTO;
 import org.example.model.ListSaveOrderDTO;
+import org.example.model.SaveOrderDTO;
 import org.example.service.AccountService;
 import org.example.service.CustomerService;
 import org.example.service.OrderService;
@@ -17,11 +18,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -39,62 +39,42 @@ public class OrderValidate {
     private final String DATE_MAX = "01-01-5000";
     public ListSaveOrderDTO validateSaveOrder(SaveListOrderRequest request,AccountEntity account) {
         List<ErrorDTO>  errors  = new ArrayList<>();
-        StringBuilder   sql     = new StringBuilder();
+        List<SaveOrderDTO> listOrder = new ArrayList<>();
         request.getListOrder().forEach(orderRequest ->{
+            SaveOrderDTO orderDTO = new SaveOrderDTO();
             List<String> error  = new ArrayList<>();
+            orderDTO.setOrderId(orderRequest.getOrderId());
+            orderDTO.setVersion(orderRequest.getVersion());
+            orderDTO.setAccountId(account.getAccountId());
+            orderDTO.setOrdinalNumber(orderRequest.getOrdinalNumber());
             ProductEntity product =
                     productService.findByProductCode(orderRequest.getProductCode());
             CustomerEntity customer =
                     converterMapToEntity(customerService.findByPhoneNumber(orderRequest.getPhoneNumberCustomer()));
             if(product.getProductId()==null){
-                error.add("ProductCode not found!");
+                error.add("Mã sản phẩm không tồn tại!");
+            }else{
+                orderDTO.setProductId(product.getProductId());
+                orderDTO.setUnitPrice(product.getSalePrice());
+                orderDTO.setQuantity(orderRequest.getQuantity());
             }
             if(customer.getCustomerId()==null){
-                error.add("PhoneNumber of Customer not found!");
+                error.add("Số điện thoại không tồn tại!");
+            }else{
+                orderDTO.setCustomerId(customer.getCustomerId());
+                orderDTO.setPhoneNumber(customer.getPhoneNumber());
+                orderDTO.setAddress(customer.getAddress());
             }
             if(orderRequest.getQuantity()<1){
-                error.add("Quantity invalid!");
+                error.add("Số lượng không hợp lệ!");
             }
             if(!error.isEmpty()){
                 errors.add(new ErrorDTO(orderRequest.getOrdinalNumber(),error));
-            }else if(orderRequest.getOrderId()!=0){
-                sql.append("UPDATE\n")
-                   .append("        orders o\n")
-                   .append(" JOIN   product    p ON p.product_id   = o.product_id\n")
-                   .append(" JOIN   customer   c ON c.customer_id  = o.customer_id\n")
-                   .append(" SET\n")
-                   .append("    o.product_id                = ").append(product.getProductId()).append("\n")
-                   .append(",   o.unit_price                = ").append(product.getSalePrice()).append("\n")
-                   .append(",   o.quantity                  = ").append(orderRequest.getQuantity()).append("\n")
-                   .append(",   o.customer_id               = ").append(customer.getCustomerId()).append("\n")
-                   .append(",   o.address_customer          = ").append("'").append(customer.getAddress()).append("'").append("\n")
-                   .append(",   o.phone_number_customer     = ").append(customer.getPhoneNumber()).append("\n")
-                   .append(",   o.version                   = ").append(" o.version + 1\n")
-                   .append(" WHERE\n")
-                   .append("      o.order_id                = ").append(orderRequest.getOrderId()).append("\n")
-                   .append(" AND  o.version                 = ").append(orderRequest.getVersion()).append("\n")
-                   .append(" AND  o.order_status_id         = ").append(1).append(";\n");
-            }else {
-                sql.append("INSERT INTO orders(")
-                   .append(" product_id")
-                   .append(", unit_price")
-                   .append(", quantity")
-                   .append(", customer_id")
-                   .append(", address_customer")
-                   .append(", phone_number_customer")
-                   .append(", account_id )\n")
-                   .append("VALUES( ")
-                   .append(product.getProductId())
-                   .append(", ").append(product.getSalePrice())
-                   .append(", ").append(orderRequest.getQuantity())
-                   .append(", ").append(customer.getCustomerId())
-                   .append(", ").append("'").append(customer.getAddress()).append("' ")
-                   .append(", ").append("'").append(customer.getPhoneNumber()).append("' ")
-                   .append(", ").append(account.getAccountId()).append(" );\n");
             }
+            listOrder.add(orderDTO);
         });
 
-        return new ListSaveOrderDTO(errors,sql);
+        return new ListSaveOrderDTO(errors,listOrder);
     }
 
     private CustomerEntity converterMapToEntity(Map<String, Object> map) {
@@ -113,6 +93,21 @@ public class OrderValidate {
         }
         boolean isValidDate = true;
         try {
+            if(request.getAllocation()==null && request.getOrder()==null){
+                request.setAllocation(2);
+                request.setOrder(1);
+            }
+            if(request.getOrder()==0 && request.getAllocation()==0){
+                request.setAllocation(2);
+                request.setOrder(1);
+            }
+            if(request.getOrder()==null){
+                request.setOrder(0);
+            }
+            if(request.getAllocation()==null){
+                request.setAllocation(0);
+            }
+
             if( StringUtils.isBlank(request.getBeginOrderDate()) ){
                 request.setBeginOrderDate(DATE_MIN);
                 isValidDate = false;
@@ -136,6 +131,5 @@ public class OrderValidate {
         }
         return errors;
     }
-
-
 }
+

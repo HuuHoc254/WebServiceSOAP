@@ -53,4 +53,5 @@ public class TestLogin {
         this.webClient.post().uri("/ws/example.wsdl").contentType(MediaType.TEXT_XML).accept(MediaType.TEXT_XML).bodyValue(request)
                 .exchange().expectStatus().is5xxServerError();
     }
+
 }

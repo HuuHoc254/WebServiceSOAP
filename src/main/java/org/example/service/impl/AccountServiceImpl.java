@@ -99,4 +99,9 @@ public class AccountServiceImpl implements AccountService {
     public Optional<AccountEntity> findByToken(String token) {
         return accountRepository.findByToken(token);
     }
+
+    @Override
+    public void logout(Integer accountId) {
+        accountRepository.deleteToken(accountId);
+    }
 }

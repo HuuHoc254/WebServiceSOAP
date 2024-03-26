@@ -8,6 +8,8 @@ import org.example.entity.CustomerEntity;
 import org.example.entity.ProductEntity;
 import org.springframework.validation.Errors;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,4 +18,5 @@ public class UpdateOrderValidateDTO {
     private CustomerEntity customer;
     private ProductEntity product;
     private Errors errors;
+
 }

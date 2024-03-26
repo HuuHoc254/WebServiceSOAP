@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.dto.request.order.SearchOrderRequest;
 import org.example.entity.AccountEntity;
+import org.example.model.SaveOrderDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,8 @@ public interface OrderService {
                                   , String  endDate);
 
     void saveOrder(StringBuilder sql);
+
+    void saveAll(List<SaveOrderDTO> listOrder);
 
     List<Map<String, Object>> findCustomerZeroOrder(String startDate, String endDate, int recordNumber, int pageSize);
 

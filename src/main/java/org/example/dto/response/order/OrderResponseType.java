@@ -10,7 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Setter
+@Setter 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

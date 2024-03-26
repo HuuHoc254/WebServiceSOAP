@@ -2,10 +2,13 @@ package org.example.endpoint;
 
 import org.apache.coyote.BadRequestException;
 import org.example.dto.request.account.LoginRequest;
+//import org.example.dto.request.account.LogoutRequest;
 import org.example.dto.response.StatusResponse;
 import org.example.entity.AccountEntity;
+import org.example.security.UserDetailImpl;
 import org.example.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,9 +20,15 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Endpoint
 public class LoginEndpoint {
     private static final String NAMESPACE_URI = "http://yournamespace.com";
+    private static final String ADMIN = "ROLE_ADMIN";
+    private static final String STAFF = "ROLE_STAFF";
     private final AuthenticationManager authenticationManager;
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -58,6 +67,20 @@ public class LoginEndpoint {
         } catch (AuthenticationException e) {
             // Xử lý ngoại lệ khi đăng nhập không thành công
             throw new BadRequestException();
+        }
+    }
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "logoutRequest")
+    @ResponsePayload
+    @Secured({ADMIN, STAFF})
+    public StatusResponse logout() {
+        UserDetailImpl userDetail = (UserDetailImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        try {
+            accountService.logout(userDetail.getAccountId());
+            return new StatusResponse("Logout success ");
+        } catch (AuthenticationException e) {
+            // Xử lý ngoại lệ khi đăng nhập không thành công
+            return new StatusResponse("Logout Fail ");
         }
     }
 }

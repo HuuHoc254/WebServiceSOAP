@@ -30,4 +30,6 @@ public interface AccountService {
     void createToken(AccountEntity accountEntity);
 
     Optional<AccountEntity> findByToken(String token);
+
+    void logout(Integer accountId);
 }

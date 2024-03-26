@@ -50,11 +50,11 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
     int existsByAccountName(@Param("accountName") String accountName);
 
     @Query(value =    " SELECT"
-            + "     COUNT(*)"
-            + " FROM"
-            + "     account"
-            + " WHERE"
-            + "     phone_number = :phoneNumber"
+                    + "     COUNT(*)"
+                    + " FROM"
+                    + "     account"
+                    + " WHERE"
+                    + "     phone_number = :phoneNumber"
             ,nativeQuery = true)
     int existsByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 
@@ -72,21 +72,21 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
                     + " AND version         = :version"
             ,nativeQuery = true)
     int updateAccount(
-            @Param("accountId")     Integer accountId,
-            @Param("accountName")   String  accountName,
-            @Param("password")      String  password,
-            @Param("fullName")      String  fullName,
-            @Param("phoneNumber")   String  phoneNumber,
-            @Param("version")       Integer version
+                    @Param("accountId")     Integer accountId,
+                    @Param("accountName")   String  accountName,
+                    @Param("password")      String  password,
+                    @Param("fullName")      String  fullName,
+                    @Param("phoneNumber")   String  phoneNumber,
+                    @Param("version")       Integer version
     );
     @Query( value =   " SELECT"
                     + "     COUNT(*)"
                     + SQL_SEARCH
             ,nativeQuery = true)
     int countSearch(
-            @Param("accountName")   String accountName,
-            @Param("phoneNumber")   String phoneNumber,
-            @Param("fullName")      String fullName
+                    @Param("accountName")   String accountName,
+                    @Param("phoneNumber")   String phoneNumber,
+                    @Param("fullName")      String fullName
     );
 
     @Query( value =   " SELECT"
@@ -106,36 +106,44 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
                     + " LIMIT :pageSize OFFSET :rowNumber"
             ,nativeQuery = true)
     List<Map<String,Object>> searchAccount(
-            @Param("accountName")   String  accountName,
-            @Param("phoneNumber")   String  phoneNumber,
-            @Param("fullName")      String  fullName,
-            @Param("rowNumber")     int     rowNumber,
-            @Param("pageSize")      int     pageSize
+                    @Param("accountName")   String  accountName,
+                    @Param("phoneNumber")   String  phoneNumber,
+                    @Param("fullName")      String  fullName,
+                    @Param("rowNumber")     int     rowNumber,
+                    @Param("pageSize")      int     pageSize
     );
     Optional<AccountEntity> findByAccountName(String username);
     Optional<AccountEntity> findByToken(String token);
 
     @Modifying
     @Query(value =    " INSERT INTO"
-                +           " account"
-                +               "("
-                +                   "  account_name"
-                +                   ", full_name"
-                +                   ", phone_number"
-                +                   ", password"
-                +               ")"
-                +     " VALUE"
-                +           "("
-                +               "  :accountName"
-                +               ", :fullName"
-                +               ", :phoneNumber"
-                +               ", :password"
-                +           ")"
+                    + "            account"
+                    + "             ("
+                    + "                    account_name"
+                    + "                  , full_name"
+                    + "                  , phone_number"
+                    + "                  , password"
+                    + "              )"
+                    + " VALUE"
+                    + "          ("
+                    + "                :accountName"
+                    + "              , :fullName"
+                    + "              , :phoneNumber"
+                    + "              , :password"
+                    + "          )"
             ,nativeQuery = true)
-    int createAccount(   @Param("accountName")  String accountName
-                        ,@Param("fullName")     String fullName
-                        ,@Param("phoneNumber")  String phoneNumber
-                        ,@Param("password")     String password);
-
+    int createAccount(
+                     @Param("accountName")  String accountName
+                    ,@Param("fullName")     String fullName
+                    ,@Param("phoneNumber")  String phoneNumber
+                    ,@Param("password")     String password);
+    @Modifying
+    @Query(value =    " UPDATE"
+                    + "     account"
+                    + " SET"
+                    + "     token = NULL"
+                    + " WHERE"
+                    + "     account_id = :accountId"
+            ,nativeQuery = true)
+    void deleteToken(@Param("accountId")     Integer accountId);
 }
-

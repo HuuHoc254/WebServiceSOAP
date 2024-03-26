@@ -20,7 +20,8 @@ import lombok.Setter;
         , "customerPhoneNumber"
         , "beginOrderDate"
         , "endOrderDate"
-        , "orderStatusId"
+        , "order"
+        , "allocation"
         , "pageIndex"
         , "pageSize"
 })
@@ -34,7 +35,8 @@ public class SearchOrderRequest {
     private String customerPhoneNumber;
     private String beginOrderDate;
     private String endOrderDate;
-    private Integer orderStatusId;
+    private Integer order;
+    private Integer allocation;
     @XmlElement(name = "pageIndex")
     private Integer pageIndex;
     @XmlElement(name = "pageSize")
